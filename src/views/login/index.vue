@@ -72,8 +72,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -92,7 +92,7 @@ export default {
       handler: function(route) {
         const query = route.query
         if (query) {
-          this.redirect = query.redirect
+          // this.redirect = query.redirect
           this.otherQuery = this.getOtherQuery(query)
         }
       },
