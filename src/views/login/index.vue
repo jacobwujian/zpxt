@@ -236,7 +236,7 @@ $dark_gray:#889aa4;
 $light_gray:#eee;
 
 .login-container {
-  background-image: url("./ma.jpg");
+  background-image: url("../../assets/loginbg/ma.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   min-height: 100%;

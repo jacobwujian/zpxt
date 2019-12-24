@@ -22,3 +22,25 @@ export function logout() {
     method: 'GET'
   })
 }
+
+export function getAllUsers() {
+  return request({
+    url: '/user/getAllUsers',
+    method: 'GET'
+  })
+}
+
+export function insertUser(data) {
+  return request({
+    url: '/user/insertUser',
+    method: 'post',
+    data
+  })
+}
+export function updateUser(data) {
+  return request({
+    url: '/user/updateUserByPk_user',
+    method: 'post',
+    data
+  })
+}

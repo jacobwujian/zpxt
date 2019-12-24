@@ -48,7 +48,13 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
+      let obj
+      if (typeof (state.token) === 'string') {
+        obj = JSON.parse(state.token)
+      } else {
+        obj = state.token
+      }
+      getInfo(obj).then(response => {
         const data = response.data
         if (!data) {
           reject('Verification failed, please Login again.')
