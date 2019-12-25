@@ -78,18 +78,6 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/userInformation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/user/index'),
-        name: '用户信息管理',
-        meta: { title: '用户信息管理', icon: 'documentation', roles: ['admin'] }
-      }
-    ]
-  },
-  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
@@ -104,7 +92,23 @@ export const constantRoutes = [
     ]
   }
 ]
+export const asyncRoutes = [
+  {
+    path: '/userInformation',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/user/index'),
+        name: '用户信息管理',
+        meta: { title: '用户信息管理', icon: 'documentation', roles: ['admin'] }
+      }
+    ]
+  },
+  /** when your routing map is too long, you can split it into small modules **/
 
+  { path: '*', redirect: '/404', hidden: true }
+]
 /**
  * asyncRoutes
  * the routes that need to be dynamically loaded based on user roles
