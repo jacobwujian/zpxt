@@ -16,6 +16,14 @@ export function getInfo(data) {
   })
 }
 
+export function search(data) {
+  return request({
+    url: '/user/selectUserByExample',
+    method: 'post',
+    data
+  })
+}
+
 export function logout() {
   return request({
     url: '/user/logout',
@@ -38,6 +46,13 @@ export function insertUser(data) {
   })
 }
 export function updateUser(data) {
+  return request({
+    url: '/user/updateUserByPk_user',
+    method: 'post',
+    data
+  })
+}
+export function updatePassword(data) {
   return request({
     url: '/user/updateUserByPk_user',
     method: 'post',

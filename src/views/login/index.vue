@@ -5,14 +5,52 @@
       <div class="title-container">
         <h3 class="title">招聘系统</h3>
       </div>
-
-      <el-form-item prop="username">
+      <el-dialog
+        title="注册账号"
+        :visible.sync="dialogVisible"
+        fullscreen
+        :center="true"
+        class="el-dialog-longin"
+      >
+        <el-form>
+          <el-form-item class="elbody" label="姓名">
+            <el-input v-model="name" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="账号">
+            <el-input v-model="userName" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="密码">
+            <el-input v-model="password" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="手机号">
+            <el-input v-model="phone" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="学校">
+            <el-input v-model="school" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="头像地址">
+            <el-input v-model="avatar" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="身份证号">
+            <el-input v-model="IDCard" style="width: 380px" />
+          </el-form-item>
+          <el-form-item class="elbody" label="自我介绍">
+            <el-input v-model="introduction" type="textarea" style="width: 380px" />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="insert">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-form-item class="el-fo-it" prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
           v-model="loginForm.username"
+          class="el-in"
           placeholder="Username"
           name="username"
           type="text"
@@ -22,7 +60,7 @@
       </el-form-item>
 
       <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
+        <el-form-item class="el-fo-it" prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
@@ -30,6 +68,7 @@
             :key="passwordType"
             ref="password"
             v-model="loginForm.password"
+            class="el-in"
             :type="passwordType"
             placeholder="Password"
             name="password"
@@ -45,13 +84,16 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
+      <el-button :loading="loading" type="primary" style="width:48%;margin-bottom:30px;" @click.native.prevent="handleLogin">登陆</el-button>
+      <el-button :loading="loading" type="primary" style="width:48%;margin-bottom:30px;" @click.native.prevent="register">注册</el-button>
+
     </el-form>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
+import { insertUser } from '../../api/user'
 
 export default {
   name: 'Login',
@@ -84,7 +126,17 @@ export default {
       loading: false,
       showDialog: false,
       redirect: undefined,
-      otherQuery: {}
+      otherQuery: {},
+      dialogVisible: false,
+      name: '',
+      userName: '',
+      password: '',
+      phone: '',
+      userType: 'user',
+      introduction: '',
+      avatar: '',
+      IDCard: '',
+      school: ''
     }
   },
   watch: {
@@ -113,6 +165,31 @@ export default {
     // window.removeEventListener('storage', this.afterQRScan)
   },
   methods: {
+    register() {
+      this.dialogVisible = true
+    },
+    insert() {
+      const obj = {
+        pk_user: this.pk_user,
+        name: this.name,
+        userName: this.userName,
+        password: this.password,
+        phone: this.phone,
+        avatar: this.avatar,
+        introduction: this.introduction,
+        userType: this.userType,
+        IDCard: this.IDCard,
+        school: this.school
+      }
+      insertUser(obj).then(response => {
+        console.log(response)
+        this.$message({
+          message: '注册成功',
+          type: 'danger'
+        })
+        this.dialogVisible = false
+      })
+    },
     checkCapslock({ shiftKey, key } = {}) {
       if (key && key.length === 1) {
         if (shiftKey && (key >= 'a' && key <= 'z') || !shiftKey && (key >= 'A' && key <= 'Z')) {
@@ -161,24 +238,6 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
@@ -186,20 +245,27 @@ export default {
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
-$bg:#283443;
+.elbody{
+  margin-left:40%;
+}
+.el-dialog-longin .el-dialog{
+  background-image: url("../../assets/loginbg/bgre.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+$bg: rgba(119, 84, 127, 0.44);
 $light_gray:#fff;
 $cursor: #fff;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
-  .login-container .el-input input {
+  .login-container .el-in input {
     color: $cursor;
   }
 }
 
 /* reset element-ui css */
 .login-container {
-  .el-input {
+  .el-in {
     display: inline-block;
     height: 47px;
     width: 85%;
@@ -221,7 +287,7 @@ $cursor: #fff;
     }
   }
 
-  .el-form-item {
+  .el-fo-it {
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;

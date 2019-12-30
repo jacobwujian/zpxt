@@ -25,7 +25,7 @@ export default {
   components: { PanThumb },
   data() {
     return {
-      emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
+      emptyGif: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1577333132163&di=4fd8c2461dc8410244daebd87314d823&imgtype=0&src=http%3A%2F%2Fbbs.gameres.com%2Fdata%2Fattachment%2Fforum%2F201405%2F22%2F093933la32aclcyyia3w33.gif'
     }
   },
   computed: {
@@ -41,7 +41,7 @@ export default {
 <style lang="scss" scoped>
   .emptyGif {
     display: block;
-    width: 45%;
+    width: 40%;
     margin: 0 auto;
   }
 

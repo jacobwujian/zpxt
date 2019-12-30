@@ -14,7 +14,6 @@
       <el-select
         v-model="chooseRlue"
         placeholder="账号类型"
-        clearable
         style="width: 180px"
         class="filter-item"
       >
@@ -59,7 +58,6 @@
             <el-select
               v-model="userType"
               placeholder="账号类型"
-              clearable
               style="width: 380px"
               class="filter-item"
             >
@@ -79,9 +77,9 @@
         <el-table-column type="index" label="序号" width="80" />
         <el-table-column prop="name" label="姓名" width="150" show-overflow-tooltip />
         <el-table-column prop="userType" label="账号类型" width="150" show-overflow-tooltip />
-        <el-table-column prop="introduction" label="账户详情" width="150" show-overflow-tooltip />
+        <el-table-column prop="introduction" label="个人介绍" width="150" show-overflow-tooltip />
         <el-table-column prop="avatar" label="头像地址" width="150" show-overflow-tooltip />
-        <el-table-column prop="IDCard" label="身份证号" width="150" show-overflow-tooltip />
+        <el-table-column prop="iDCard" label="身份证号" width="150" show-overflow-tooltip />
         <el-table-column prop="phone" label="手机" width="150" show-overflow-tooltip />
         <el-table-column prop="school" label="学校" width="150" show-overflow-tooltip />
         <el-table-column prop="userName" label="账号" width="150" show-overflow-tooltip />
@@ -99,7 +97,8 @@
 </template>
 
 <script>
-import { getAllUsers, insertUser, updateUser } from '../../api/user'
+import { insertUser, updateUser, search } from '../../api/user'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Index',
@@ -111,7 +110,7 @@ export default {
         display_name: '用户'
       }],
       searchname: '',
-      chooseRlue: '',
+      chooseRlue: 'editor',
       dialogVisible: false,
       pk_user: '',
       name: '',
@@ -122,17 +121,43 @@ export default {
       introduction: '',
       avatar: '',
       IDCard: '',
-      school: ''
+      school: '',
+      role: ''
     }
   },
+  computed: {
+    ...mapGetters([
+      'roles'
+    ])
+  },
   mounted() {
-    getAllUsers().then(response => {
+    this.role = this.roles[0]
+    if (this.role === 'editor') {
+      this.chooseRlue = 'user'
+      this.rlues = [{
+        key: 'user',
+        display_name: '用户'
+      }]
+    }
+    const obj = {
+      searchname: this.searchname,
+      chooseRlue: this.chooseRlue
+    }
+    search(obj).then(response => {
       console.log(response)
       this.userData = response.data
     })
   },
   methods: {
     search() {
+      const obj = {
+        searchname: this.searchname,
+        chooseRlue: this.chooseRlue
+      }
+      search(obj).then(response => {
+        console.log(response)
+        this.userData = response.data
+      })
     },
     add() {
       this.pk_user = ''

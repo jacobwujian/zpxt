@@ -9,21 +9,34 @@
         <search id="header-search" class="right-menu-item" />
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
       </template>
-
+      <el-dialog  title="修改密码" :visible.sync="dialogFormVisible" width="30%">
+        <el-form ref="updateForm" v-loading.lock="loading" :model="form" style="padding: 0px 40px">
+          <el-form-item label="旧密码" label-width="80px" prop="oldPwd">
+            <el-input v-model="form.oldPwd" minlength="6" maxlength="16"  autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="新密码" label-width="80px" prop="newPwd">
+            <el-input v-model="form.newPwd" minlength="6" maxlength="16" autocomplete="off" />
+          </el-form-item>
+          <el-form-item label="确认密码" label-width="80px" prop="surePwd">
+            <el-input v-model="form.surePwd" minlength="6" maxlength="16"  autocomplete="off" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button  @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="updatePwd">确定</el-button>
+        </div>
+      </el-dialog>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <img :src="avatar" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/">
-            <el-dropdown-item>到首页</el-dropdown-item>
+            <el-dropdown-item>首页</el-dropdown-item>
           </router-link>
-          <router-link to="/profile/index">
-            <el-dropdown-item>个性页</el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>ui使用手册</el-dropdown-item>
+          <a  @click="dialogFormVisible = true">
+            <el-dropdown-item>修改密码</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登陆</span>
@@ -48,6 +61,18 @@ export default {
     Screenfull,
     Search
   },
+  data() {
+    return {
+      loading: false,
+      dialogFormVisible: false,
+      form: {
+        oldPwd: '',
+        newPwd: '',
+        surePwd: ''
+      },
+      username: ''
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
@@ -62,6 +87,9 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    updatePwd() {
+      this.dialogFormVisible = false
     }
   }
 }

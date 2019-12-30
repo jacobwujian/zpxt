@@ -76,32 +76,79 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
     ]
-  },
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'Profile', icon: 'user', noCache: true }
-      }
-    ]
   }
 ]
 export const asyncRoutes = [
   {
-    path: '/userInformation',
+    path: '/accountInformation',
     component: Layout,
     children: [
       {
         path: 'index',
         component: () => import('@/views/user/index'),
-        name: '用户信息管理',
-        meta: { title: '用户信息管理', icon: 'documentation', roles: ['admin'] }
+        name: '账户管理',
+        meta: { title: '账户管理', icon: 'documentation', roles: ['admin', 'editor'] }
+      }
+    ]
+  },
+  {
+    path: '/refer',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/ReferencesSettings/index'),
+        name: '参照设置',
+        meta: { title: '参照设置', icon: 'edit', roles: ['editor'] }
+      }
+    ]
+  },
+  {
+    path: '/activity',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/activity/index'),
+        name: '招聘活动创建',
+        meta: { title: '招聘活动创建', icon: 'edit', roles: ['editor'] }
+      }
+    ]
+  },
+  {
+    path: '/icon',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/icons/index'),
+        name: '图标',
+        meta: { title: '图标', icon: 'icon', noCache: true, roles: ['editor', 'user'] }
+      }
+    ]
+  },
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/profile/index'),
+        name: '个人页',
+        meta: { title: '个人页', icon: 'user', noCache: true, roles: ['user'] }
+      }
+    ]
+  },
+  {
+    path: '/RecruitmentActivities',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/RecruitmentActivities/index'),
+        name: '招聘活动',
+        meta: { title: '招聘活动', icon: 'documentation', roles: ['user'] }
       }
     ]
   },

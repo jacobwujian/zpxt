@@ -25,7 +25,7 @@ export default {
   components: { PanThumb },
   data() {
     return {
-      emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
+      emptyGif: 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1577333511710&di=29569f05fa1f16aded0dce2ef26a6626&imgtype=0&src=http%3A%2F%2Fimg.mp.sohu.com%2Fupload%2F20170623%2F3ca5a4b712254dbc90db191aba3dff6d.png'
     }
   },
   computed: {
@@ -41,12 +41,12 @@ export default {
 <style lang="scss" scoped>
   .emptyGif {
     display: block;
-    width: 45%;
+    width: 65%;
     margin: 0 auto;
   }
 
   .dashboard-editor-container {
-    background-color: #e3e3e3;
+    background-color: #ffffff;
     min-height: 100vh;
     padding: 50px 60px 0px;
     .pan-info-roles {

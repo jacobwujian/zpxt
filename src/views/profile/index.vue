@@ -16,7 +16,7 @@
               <el-tab-pane label="Timeline" name="timeline">
                 <timeline />
               </el-tab-pane>
-              <el-tab-pane label="Account" name="account">
+              <el-tab-pane label="简历" name="account">
                 <account :user="user" />
               </el-tab-pane>
             </el-tabs>
@@ -41,14 +41,17 @@ export default {
   data() {
     return {
       user: {},
-      activeTab: 'activity'
+      activeTab: 'activity',
+      sex: [{ name: '男', key: 'man' }, { name: '女', key: 'woman' }]
     }
   },
   computed: {
     ...mapGetters([
       'name',
       'avatar',
-      'roles'
+      'roles',
+      'introduction',
+      'pk_user'
     ])
   },
   created() {
@@ -59,8 +62,12 @@ export default {
       this.user = {
         name: this.name,
         role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
+        email: 'wujian@yonyou.com',
+        avatar: this.avatar,
+        introduction: this.introduction,
+        pk_user: this.pk_user,
+        sale: 'man',
+        age: 22
       }
     }
   }

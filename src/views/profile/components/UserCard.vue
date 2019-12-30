@@ -1,14 +1,14 @@
 <template>
   <el-card style="margin-bottom:20px;">
     <div slot="header" class="clearfix">
-      <span>About me</span>
+      <span>个人介绍</span>
     </div>
 
     <div class="user-profile">
       <div class="box-center">
         <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false">
-          <div>Hello</div>
-          {{ user.role }}
+          <div>你好</div>
+          {{ user.name }}
         </pan-thumb>
       </div>
       <div class="box-center">
@@ -19,16 +19,21 @@
 
     <div class="user-bio">
       <div class="user-education user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="education" /><span>Education</span></div>
+        <div class="user-bio-section-header"><svg-icon icon-class="star" /><span>个性签名</span>
+          <span>
+            <el-button v-if="!isEdit" type="text" icon="el-icon-edit" @click="isEdit = true" />
+            <el-button v-if="isEdit" type="text" icon="el-icon-close" @click="isEdit = false" />
+            <el-button v-if="isEdit" type="text" icon="el-icon-check" @click="update" />
+          </span></div>
         <div class="user-bio-section-body">
           <div class="text-muted">
-            JS in Computer Science from the University of Technology
+            <el-input v-model="user.introduction" type="textarea" :disabled="!isEdit" autosize />
           </div>
         </div>
       </div>
 
       <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>Skills</span></div>
+        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>技能</span></div>
         <div class="user-bio-section-body">
           <div class="progress-item">
             <span>Vue</span>
@@ -54,6 +59,7 @@
 
 <script>
 import PanThumb from '@/components/PanThumb'
+import { updateUser } from '../../../api/user'
 
 export default {
   components: { PanThumb },
@@ -65,9 +71,31 @@ export default {
           name: '',
           email: '',
           avatar: '',
-          roles: ''
+          roles: '',
+          pk_user: '',
+          introduction: ''
         }
       }
+    }
+  },
+  data() {
+    return {
+      isEdit: false
+    }
+  },
+  mounted() {
+    console.log(this.user)
+  },
+  methods: {
+    update() {
+      this.isEdit = false
+      const obj = {
+        introduction: this.user.introduction,
+        pk_user: this.user.pk_user
+      }
+      updateUser(obj).then(response => {
+        console.log(response)
+      })
     }
   }
 }
