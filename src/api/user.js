@@ -59,3 +59,10 @@ export function updatePassword(data) {
     data
   })
 }
+export function checkName(data) {
+  return request({
+    url: '/user/checkName',
+    method: 'post',
+    data
+  })
+}

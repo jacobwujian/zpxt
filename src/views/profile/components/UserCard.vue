@@ -94,7 +94,6 @@ export default {
         pk_user: this.user.pk_user
       }
       updateUser(obj).then(response => {
-        console.log(response)
       })
     }
   }

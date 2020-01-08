@@ -10,14 +10,14 @@
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
+              <el-tab-pane label="简历" name="account">
+                <account :user="user" />
+              </el-tab-pane>
               <el-tab-pane label="Activity" name="activity">
                 <activity />
               </el-tab-pane>
               <el-tab-pane label="Timeline" name="timeline">
                 <timeline />
-              </el-tab-pane>
-              <el-tab-pane label="简历" name="account">
-                <account :user="user" />
               </el-tab-pane>
             </el-tabs>
           </el-card>
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       user: {},
-      activeTab: 'activity',
+      activeTab: 'account',
       sex: [{ name: '男', key: 'man' }, { name: '女', key: 'woman' }]
     }
   },

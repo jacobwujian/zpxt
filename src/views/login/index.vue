@@ -12,9 +12,9 @@
         :center="true"
         class="el-dialog-longin"
       >
-        <el-form>
+        <el-form :rules="rules">
           <el-form-item class="elbody" label="姓名">
-            <el-input v-model="name" style="width: 380px" />
+            <el-input v-model="name" style="width: 380px" @change="Check" />
           </el-form-item>
           <el-form-item class="elbody" label="账号">
             <el-input v-model="userName" style="width: 380px" />
@@ -34,7 +34,7 @@
           <el-form-item class="elbody" label="身份证号">
             <el-input v-model="IDCard" style="width: 380px" />
           </el-form-item>
-          <el-form-item class="elbody" label="自我介绍">
+          <el-form-item class="elbody" label="个人标签">
             <el-input v-model="introduction" type="textarea" style="width: 380px" />
           </el-form-item>
         </el-form>
@@ -93,7 +93,7 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
-import { insertUser } from '../../api/user'
+import { checkName, insertUser } from '../../api/user'
 
 export default {
   name: 'Login',
@@ -108,6 +108,13 @@ export default {
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
         callback(new Error('The password can not be less than 6 digits'))
+      } else {
+        callback()
+      }
+    }
+    const validateSpace = (rule, value, callback) => {
+      if (value.trim() + '' === '') {
+        callback(new Error('内容不能全为空格'))
       } else {
         callback()
       }
@@ -136,7 +143,25 @@ export default {
       introduction: '',
       avatar: '',
       IDCard: '',
-      school: ''
+      school: '',
+      rules: {
+        name: [
+          { required: true, message: '姓名', trigger: 'blur' },
+          { validator: validateUsername }
+        ],
+        password: [
+          { required: true, message: '密码', trigger: 'blur' },
+          { validator: validatePassword }
+        ],
+        userName: [
+          { required: true, message: '账号', trigger: 'blur' },
+          { validator: validateUsername }
+        ],
+        IDCard: [
+          { required: true, message: '身份证', trigger: 'blur' },
+          { validator: validateSpace }
+        ]
+      }
     }
   },
   watch: {
@@ -237,6 +262,13 @@ export default {
         }
         return acc
       }, {})
+    },
+    Check() {
+      checkName({ name: this.name }).then(
+        response => {
+          console.log(response.data)
+        }
+      )
     }
   }
 }
