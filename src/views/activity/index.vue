@@ -38,9 +38,9 @@
           <el-step title="起止时间" />
         </el-steps>
         <div style="height: 400px;margin: 30px">
-          <view1 v-if="active === 0" :dia-data1="diaData1" />
-          <view2 v-if="active === 1" :dia-data2="diaData2" />
-          <view3 v-if="active === 3" :dia-data3="diaData3" />
+          <view1 v-if="active === 0" ref="view1" :dia-data1="diaData1" />
+          <view2 v-if="active === 1" ref="view2" :dia-data2="diaData2" />
+          <view3 v-if="active === 3" ref="view3" :dia-data3="diaData3" />
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button v-if="active===3" type="primary" @click="updateOrInsert">确 定</el-button>
@@ -115,10 +115,12 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'roles'
+      'roles',
+      'name'
     ])
   },
   mounted() {
+    this.diaData1.userName = this.name
   },
   methods: {
     search() {
@@ -133,6 +135,10 @@ export default {
 
     },
     next() {
+      const canNext = this.verify()
+      if (!canNext) {
+        return
+      }
       if (this.active < 4) {
         this.active++
         if (this.active === 2) {
@@ -149,6 +155,21 @@ export default {
       }
     },
     updateOrInsert() {
+      if (this.diaData1.pk_act === undefined) {
+
+      } else {
+
+      }
+    },
+    verify() {
+      // 校验
+      if (this.active === 0) {
+        return this.$refs.view1.verify()
+      } else if (this.active === 1) {
+        return false
+      } else if (this.active === 3) {
+        return false
+      }
     }
   }
 }

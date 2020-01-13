@@ -92,14 +92,30 @@
       </el-table-column>
       <el-table-column prop="startTime" align="center" label="入学时间" width="300" show-overflow-tooltip>
         <template slot-scope="scope">
-          <el-input v-if="!edit" v-model="scope.row.startTime" />
-          <div v-else>{{ scope.row.startTime }}</div>
+          <el-date-picker
+            v-if="!edit"
+            v-model="scope.row.startTime"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="timestamp"
+          >
+          </el-date-picker>
+          <div v-else>{{ timeFormat(scope.row.startTime) }}</div>
         </template>
       </el-table-column>
       <el-table-column prop="endTime" align="center" label="毕业时间" width="300" show-overflow-tooltip>
         <template slot-scope="scope">
-          <el-input v-if="!edit" v-model="scope.row.endTime" />
-          <div v-else>{{ scope.row.endTime }}</div>
+          <el-date-picker
+            v-if="!edit"
+            v-model="scope.row.endTime"
+            type="date"
+            placeholder="选择日期"
+            format="yyyy 年 MM 月 dd 日"
+            value-format="timestamp"
+          >
+          </el-date-picker>
+          <div v-else>{{ timeFormat(scope.row.endTime) }}</div>
         </template>
       </el-table-column>
     </el-table>
@@ -163,7 +179,7 @@ export default {
         }
       },
       edit: true,
-      eduData: [{ name: '', type: '', startTime: '', endTime: '' }, { name: '', type: '', startTime: '', endTime: '' }, { name: '', type: '', startTime: '', endTime: '' }],
+      eduData: [],
       phone: '',
       introduction: '',
       imageUrl: '',
@@ -176,7 +192,12 @@ export default {
       this.options = response.data
     })
     getResume({ pk_user: this.user.pk_user }).then(response => {
+      console.log(response)
       this.resume = response.data
+      this.eduData = []
+      this.eduData.push({ name: response.data.school1, type: response.data.schoolType1, startTime: response.data.start1, endTime: response.data.end1 })
+      this.eduData.push({ name: response.data.school2, type: response.data.schoolType2, startTime: response.data.start2, endTime: response.data.end2 })
+      this.eduData.push({ name: response.data.school3, type: response.data.schoolType3, startTime: response.data.start3, endTime: response.data.end3 })
       const city = response.data.city.substring(2, response.data.city.length - 2)
       this.resume.city = city.split('], [')
       for (let i = 0; i < this.resume.city.length; i++) {
@@ -217,13 +238,33 @@ export default {
     submit() {
       this.edit = true
       console.log(this.resume.city)
+      this.resetEduData()
       updateResume(this.resume).then(response => {
         console.log(response)
       })
     },
+    resetEduData() {
+      console.log('jin')
+      this.resume.school1 = this.eduData[0].name
+      this.resume.school2 = this.eduData[1].name
+      this.resume.school3 = this.eduData[2].name
+      this.resume.schoolType1 = this.eduData[0].type
+      this.resume.schoolType2 = this.eduData[1].type
+      this.resume.schoolType3 = this.eduData[2].type
+      this.resume.start1 = this.eduData[0].startTime
+      this.resume.start2 = this.eduData[1].startTime
+      this.resume.start3 = this.eduData[2].startTime
+      this.resume.end1 = this.eduData[0].endTime
+      this.resume.end2 = this.eduData[1].endTime
+      this.resume.end3 = this.eduData[2].endTime
+    },
     cannel() {
       this.edit = true
       getResume({ pk_user: this.user.pk_user }).then(response => {
+        this.eduData = []
+        this.eduData.push({ name: response.data.school1, type: response.data.schoolType1, startTime: response.data.start1, endTime: response.data.end1 })
+        this.eduData.push({ name: response.data.school2, type: response.data.schoolType2, startTime: response.data.start2, endTime: response.data.end2 })
+        this.eduData.push({ name: response.data.school3, type: response.data.schoolType3, startTime: response.data.start3, endTime: response.data.end3 })
         this.resume = response.data
       })
     },
@@ -242,6 +283,10 @@ export default {
         inp = inp.getElementsByTagName('input')[0]
         inp.value = this.ageOld
       }
+    },
+    timeFormat(time) {
+      const date = new Date(time)
+      return date.getFullYear() + '年' + date.getMonth() + 1 + '月' + date.getDate() + '日'
     }
   }
 }

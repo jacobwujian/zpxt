@@ -8,7 +8,8 @@
         v-model="diaData3.startTime"
         type="datetime"
         placeholder="选择开始时间"
-        default-time="12:00:00">
+        default-time="00:00:00"
+        value-format="timestamp">
       </el-date-picker>
     </div>
     <br>
@@ -21,7 +22,9 @@
         v-model="diaData3.endTime"
         type="datetime"
         placeholder="选择开始时间结束"
-        default-time="12:00:00">
+        default-time="23:59:59"
+        value-format="timestamp"
+      >
       </el-date-picker>
     </div>
   </div>

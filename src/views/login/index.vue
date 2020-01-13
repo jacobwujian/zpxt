@@ -125,7 +125,7 @@ export default {
         password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur', validator: validateSpace }],
         password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       passwordType: 'password',
@@ -146,7 +146,7 @@ export default {
       school: '',
       rules: {
         name: [
-          { required: true, message: '姓名', trigger: 'blur' },
+          { required: true, message: '姓名', trigger: 'blur', validator: validateSpace },
           { validator: validateUsername }
         ],
         password: [
@@ -154,7 +154,7 @@ export default {
           { validator: validatePassword }
         ],
         userName: [
-          { required: true, message: '账号', trigger: 'blur' },
+          { required: true, message: '账号', trigger: 'blur', validator: validateSpace },
           { validator: validateUsername }
         ],
         IDCard: [
@@ -281,7 +281,7 @@ export default {
   margin-left:40%;
 }
 .el-dialog-longin .el-dialog{
-  background-image: url("../../assets/loginbg/bgre.jpg");
+  background-image: url("../../assets/loginbg/ma.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
