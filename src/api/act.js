@@ -13,6 +13,14 @@ export function getActInformation(data) {
     data
   })
 }
+export function getActByExample(data) {
+  return request({
+    url: '/act/searchByExample',
+    method: 'post',
+    data
+  })
+}
+
 export function insertAct(data) {
   return request({
     url: '/act/insertAct',
@@ -46,5 +54,11 @@ export function deleteAct(data) {
     url: '/act/deleteAct',
     method: 'post',
     data
+  })
+}
+export function getActsForUser() {
+  return request({
+    url: '/act/getActsForUser',
+    method: 'GET'
   })
 }

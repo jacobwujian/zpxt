@@ -33,23 +33,17 @@
       </div>
 
       <div class="user-skills user-bio-section">
-        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>技能</span></div>
+        <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>技能</span>
+          <span>
+            <el-button v-if="!isEditSkill" type="text" icon="el-icon-edit" @click="isEditSkill = true" />
+            <el-button v-if="!isEditSkill" type="text" icon="el-icon-plus" @click="dialogVisible = true" />
+            <el-button v-if="isEditSkill" type="text" icon="el-icon-close" @click="isEditSkill = false" />
+            <el-button v-if="isEditSkill" type="text" icon="el-icon-check" @click="update" />
+          </span></div>
         <div class="user-bio-section-body">
-          <div class="progress-item">
-            <span>Vue</span>
-            <el-progress :percentage="70" />
-          </div>
-          <div class="progress-item">
-            <span>JavaScript</span>
-            <el-progress :percentage="18" />
-          </div>
-          <div class="progress-item">
-            <span>Css</span>
-            <el-progress :percentage="12" />
-          </div>
-          <div class="progress-item">
-            <span>ESLint</span>
-            <el-progress :percentage="100" status="success" />
+          <div v-for="item in skills" :key="item.skillName" class="progress-item">
+            <span>{{item.skillName}}</span>
+            <el-slider v-model="item.skillValue" :disabled="!isEditSkill" />
           </div>
         </div>
       </div>
@@ -80,11 +74,14 @@ export default {
   },
   data() {
     return {
-      isEdit: false
+      isEdit: false,
+      isEditSkill: false,
+      value1: 10,
+      skills: [],
+      dialogVisible: false
     }
   },
   mounted() {
-    console.log(this.user)
   },
   methods: {
     update() {

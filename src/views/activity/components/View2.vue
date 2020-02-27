@@ -1,13 +1,15 @@
 <template>
   <div>
-    <div v-for="item in diaData2" :key="item.key">
-      <label>{{ item.filedName }}</label>
-      <el-select v-model="item.screenCoin" style="width: 380px" />
-      <el-input v-model="item.screenValue" style="width: 380px" />
-      <br>
-      <br>
-    </div>
-    <el-button type="primary" @click="add">增加</el-button>
+    <el-form v-model="diaData2">
+      <el-form-item v-for="item in diaData2" :key="item.name">
+        <span style="margin-left: 30px">条件名：</span>
+        <label style="width: 250px;color: #3d111f;">{{ item.name }}</label>
+        <span style="margin-left: 30px">比较符：</span><el-input v-model="item.screenCoin"  style="width: 250px" />
+        <span style="margin-left: 30px">条件值：</span><el-input v-model="item.screenValue1"  style="width:250px" />
+      </el-form-item>
+      <el-form-item>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -20,13 +22,16 @@ export default {
       default: () => []
     }
   },
+  data() {
+    return {
+      selected: [{ filedName: '学历', screenCoin: ['in'], screenValue1: [] }],
+      reasons: [{ name: '学历', key: 'education' }, { name: '年龄', key: 'age' }, { name: '意向城市', key: 'city' }, { name: '所求职位', key: 'job' }],
+      coin: ['>', '>=', '=', '<', '<=', 'between']
+    }
+  },
   mounted() {
-    console.log(this.diaData2)
   },
   methods: {
-    add() {
-      this.diaData2.push({ filedName: '', screenCoin: '', screenValue: '' })
-    }
   }
 }
 </script>

@@ -87,7 +87,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/user/index'),
         name: '账户管理',
-        meta: { title: '账户管理', icon: 'documentation', roles: ['admin', 'editor'] }
+        meta: { title: '账户管理', icon: 'documentation', roles: ['admin'] }
       }
     ]
   },
@@ -99,7 +99,19 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/ReferencesSettings/index'),
         name: '参照设置',
-        meta: { title: '参照设置', icon: 'edit', roles: ['editor'] }
+        meta: { title: '参照设置', icon: 'edit', roles: ['admin'] }
+      }
+    ]
+  },
+  {
+    path: '/companyInfo',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/companyInfo/index'),
+        name: '公司信息',
+        meta: { title: '公司信息', icon: 'edit', roles: ['editor'] }
       }
     ]
   },
@@ -116,6 +128,18 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/resultInfo',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/result/index'),
+        name: '活动详情',
+        meta: { title: '活动详情', icon: 'documentation', roles: ['editor'] }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     children: [
@@ -123,7 +147,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/icons/index'),
         name: '图标',
-        meta: { title: '图标', icon: 'icon', noCache: true, roles: ['editor', 'user'] }
+        meta: { title: '图标', icon: 'icon', noCache: true, roles: ['admin'] }
       }
     ]
   },
@@ -152,6 +176,7 @@ export const asyncRoutes = [
       }
     ]
   },
+
   /** when your routing map is too long, you can split it into small modules **/
 
   { path: '*', redirect: '/404', hidden: true }

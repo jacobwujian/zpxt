@@ -63,7 +63,7 @@
       <div class="table">
         <div class="filter-container">
           <el-input
-            v-model="searchname"
+            v-model="searchName"
             placeholder="参照名"
             clearable
             style="width: 200px;"
@@ -92,7 +92,7 @@
                 <el-button v-if="scope.row.edit" type="success" size="small" @click="sure(scope.row)">确定</el-button>
                 <el-button v-if="scope.row.edit" size="small" @click="cannel(scope.row)">取消</el-button>
                 <el-button v-if="!scope.row.edit" type="warning" size="small" @click="edit(scope.row)">修改</el-button>
-                <el-button v-if="!scope.row.edit" type="danger" size="small" @click="deleteRef(scope.row)">删除</el-button>
+                <el-button v-if="!scope.row.edit" type="danger" size="small" @click="deleteRef(scope.row,scope.$index)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { getAllTypes, getChildren, addType, deleteType, getRef, resetRefName, resetTypeName, addRef } from '../../api/ref'
+import { getAllTypes, getChildren, addType, deleteType, getRef, resetRefName, resetTypeName, addRef, deleteRef } from '../../api/ref'
 export default {
   name: 'Index',
   data() {
@@ -129,7 +129,7 @@ export default {
         parent: null
       },
       dialogFormVisible: false,
-      searchname: '',
+      searchName: '',
       chooseNode: '',
       type: '',
       opera: '',
@@ -162,7 +162,15 @@ export default {
         row.edit = true
       }
     },
-    deleteRef(row) {},
+    deleteRef(row, index) {
+      deleteRef(row).then(response => {
+        this.refData.splice(index, 1)
+        this.$notify({
+          type: 'success',
+          message: '删除成功!'
+        })
+      })
+    },
     sure(row) {
       if (row.pk_ref !== undefined) {
         resetRefName(row).then(response => {
@@ -262,7 +270,18 @@ export default {
       this.dialogFormVisible = true
       this.opera = 'edit'
     },
-    search() {},
+    search() {
+      this.currentPage = 1
+      const obj = {
+        type: this.type,
+        children: this.children,
+        name: this.searchName
+      }
+      getRef(obj).then(response => {
+        this.refData = response.data
+        this.currentPageData()
+      })
+    },
     addRef() {
       const obj = {
         name: '',
@@ -276,10 +295,11 @@ export default {
       if (this.type !== data.id) {
         this.currentPage = 1
         this.type = data.id
+        this.children = data.children
         const obj = {
           type: data.id,
           children: data.children,
-          searchname: this.searchname
+          name: this.searchName
         }
         getRef(obj).then(response => {
           this.refData = response.data

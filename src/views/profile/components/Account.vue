@@ -1,14 +1,14 @@
 <template>
-  <div style="height: 700px">
+  <div style="height: 700px;overflow-x: auto">
     <div class="touxang">
       <el-upload
         class="avatar-uploader"
-        action="https://jsonplaceholder.typicode.com/posts/"
+        :action="action"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
       >
-        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+        <el-image v-if="resume.picture" :src="'data:image/jepg;base64,' + resume.picture" class="avatar" lazy></el-image>
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
     </div>
@@ -22,7 +22,7 @@
         v-model="resume.sex"
         :disabled="edit"
         size="mini"
-        placeholder="账号类型"
+        placeholder="性别"
         class="elforminput"
       >
         <el-option v-for="item in sex" :key="item.key" :label="item.name" :value="item.key" />
@@ -47,8 +47,19 @@
     </span>
     <span>
       <label>邮箱:</label>
-      <el-input v-model.trim="resume.email" :disabled="edit" class="elforminput" size="mini" style="width: 250px" />
+      <el-input v-model.trim="resume.email" :disabled="edit" class="elforminput" size="mini" style="width: 200px" />
     </span>
+    <span>
+      <label>学历:</label>
+      <el-select
+        v-model="resume.education"
+        :disabled="edit"
+        size="mini"
+        placeholder="学历"
+        style="width: 150px"
+      >
+        <el-option v-for="item in education" :key="item.name" :label="item.name" :value="item.name" />
+      </el-select>    </span>
     <br>
     <br>
     <span>
@@ -63,12 +74,20 @@
         :options="options"
         :props="props"
         :show-all-levels="false"
+        style=" width: 180px;margin-right: 20px;"
       />
     </span>
     <span>
       <label>意向职位:</label>
-      <el-input v-model.trim="resume.job" :disabled="edit" class="elforminput" size="mini" style="width: 200px" />
-    </span>
+      <el-select
+        v-model="resume.job"
+        :disabled="edit"
+        size="mini"
+        placeholder="职位"
+        style="width: 150px"
+      >
+        <el-option v-for="item in jobs" :key="item.name" :label="item.name" :value="item.name" />
+      </el-select>        </span>
     <br>
     <br>
     <span>
@@ -76,7 +95,7 @@
     </span>
     <br>
     <br>
-    <el-table :data="eduData" border highlight-current-row style="width: 1051px">
+    <el-table :data="eduData" border highlight-current-row style="width: 1071px">
       <el-table-column type="index" align="center" label="序号" width="100" />
       <el-table-column prop="name" align="center" label="学校名" width="250" show-overflow-tooltip>
         <template slot-scope="scope">
@@ -84,7 +103,7 @@
           <div v-else style="height: 36px">{{ scope.row.name }}</div>
         </template>
       </el-table-column>
-      <el-table-column prop="type" align="center" label="学校性质" width="100" show-overflow-tooltip>
+      <el-table-column prop="type" align="center" label="学校性质" width="120" show-overflow-tooltip>
         <template slot-scope="scope">
           <el-input v-if="!edit" v-model="scope.row.type" />
           <div v-else>{{ scope.row.type }}</div>
@@ -99,8 +118,7 @@
             placeholder="选择日期"
             format="yyyy 年 MM 月 dd 日"
             value-format="timestamp"
-          >
-          </el-date-picker>
+          />
           <div v-else>{{ timeFormat(scope.row.startTime) }}</div>
         </template>
       </el-table-column>
@@ -113,8 +131,7 @@
             placeholder="选择日期"
             format="yyyy 年 MM 月 dd 日"
             value-format="timestamp"
-          >
-          </el-date-picker>
+          />
           <div v-else>{{ timeFormat(scope.row.endTime) }}</div>
         </template>
       </el-table-column>
@@ -135,7 +152,6 @@
 import { getChildren, getRef } from '../../../api/ref'
 import { updateResume, getResume } from '../../../api/resume'
 
-import axios from 'axios'
 export default {
   props: {
     user: {
@@ -153,7 +169,10 @@ export default {
   },
   data() {
     return {
+      action: 'http://localhost:9530/behind/api/resume/setPicture?pk_resume=',
       sex: [{ name: '男', key: 'man' }, { name: '女', key: 'woman' }],
+      education: [],
+      jobs: [],
       ageOld: '',
       currentValue: '',
       city: '',
@@ -188,12 +207,27 @@ export default {
     }
   },
   mounted() {
+    getRef({ type: 77 }).then(response => {
+      this.education = response.data
+    })
+    getRef({ type: 78 }).then(response => {
+      this.jobs = response.data
+    })
     getChildren({ parent: 43 }).then(response => {
       this.options = response.data
+      for (const item in this.options) {
+        getRef({ type: this.options[item].id }).then(res => {
+          const arr = []
+          for (let j = 0; j < res.data.length; j++) {
+            arr.push({ label: res.data[j].name, value: res.data[j].name, leaf: true })
+          }
+          this.$set(this.options[item], 'children', arr)
+        })
+      }
     })
     getResume({ pk_user: this.user.pk_user }).then(response => {
-      console.log(response)
       this.resume = response.data
+      this.action = this.action + this.resume.pk_resume
       this.eduData = []
       this.eduData.push({ name: response.data.school1, type: response.data.schoolType1, startTime: response.data.start1, endTime: response.data.end1 })
       this.eduData.push({ name: response.data.school2, type: response.data.schoolType2, startTime: response.data.start2, endTime: response.data.end2 })
@@ -209,18 +243,9 @@ export default {
   methods: {
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw)
-
-      var formdata1 = new FormData()// 创建form对象
-      formdata1.append('img', file, file.name)// 通过append向form对象添加数据,可以通过append继续添加数据
-      // 或formdata1.append('img',file);
-      const config = {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      } // 添加请求头
-      axios.post('/xapi/upimage', formdata1, config).then(response => {
-        console.log(response.data)
-      })
     },
     beforeAvatarUpload(file) {
+      console.log(file)
       const isJPG = file.type === 'image/jpeg'
       const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
@@ -237,14 +262,11 @@ export default {
     },
     submit() {
       this.edit = true
-      console.log(this.resume.city)
       this.resetEduData()
       updateResume(this.resume).then(response => {
-        console.log(response)
       })
     },
     resetEduData() {
-      console.log('jin')
       this.resume.school1 = this.eduData[0].name
       this.resume.school2 = this.eduData[1].name
       this.resume.school3 = this.eduData[2].name
@@ -266,6 +288,12 @@ export default {
         this.eduData.push({ name: response.data.school2, type: response.data.schoolType2, startTime: response.data.start2, endTime: response.data.end2 })
         this.eduData.push({ name: response.data.school3, type: response.data.schoolType3, startTime: response.data.start3, endTime: response.data.end3 })
         this.resume = response.data
+        const city = response.data.city.substring(2, response.data.city.length - 2)
+        this.resume.city = city.split('], [')
+        for (let i = 0; i < this.resume.city.length; i++) {
+          const sr = this.resume.city[i]
+          this.resume.city[i] = sr.split(', ')
+        }
       })
     },
     numberChange(currentValue, oldValue) {

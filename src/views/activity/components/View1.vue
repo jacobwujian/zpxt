@@ -13,7 +13,7 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="活动创建人:" prop="creator">
-              <el-input v-model="diaData1.creator" class="el-input-ddr" maxlength="50" />
+              <el-input disabled v-model="diaData1.creator" class="el-input-ddr" maxlength="50" />
             </el-form-item>
           </div>
         </el-col>
@@ -22,8 +22,12 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="活动提供岗位:" prop="job">
-              <el-input v-model="diaData1.job" class="el-input-name" maxlength="50" />
-            </el-form-item>
+              <el-select
+                v-model="diaData1.job"
+                placeholder="职位"
+              >
+                <el-option v-for="item in jobs" :key="item.name" :label="item.name" :value="item.name" />
+              </el-select>             </el-form-item>
           </div>
         </el-col>
         <el-col :span="12">
@@ -53,6 +57,7 @@
 </template>
 
 <script>
+import { getChildren, getRef } from '../../../api/ref'
 export default {
   name: 'View1',
   props: {
@@ -72,6 +77,7 @@ export default {
   },
   data() {
     return {
+      jobs: [],
       labelPosition: 'right',
       rules: {
         act_name: [
@@ -95,6 +101,11 @@ export default {
       }
     }
   },
+  mounted() {
+    getRef({ type: 78 }).then(response => {
+      this.jobs = response.data
+    })
+  },
   methods: {
     verify() {
       // 校验
@@ -104,6 +115,9 @@ export default {
         can = is
       })
       return can
+    },
+    clear() {
+      this.$refs.form.clearValidate()
     }
   }
 }

@@ -5,7 +5,7 @@
     </title>
     <div class="titleRow">
       <el-input
-        v-model="searchname"
+        v-model="searchName"
         placeholder="账号"
         clearable
         style="width: 200px;"
@@ -105,11 +105,11 @@ export default {
   data() {
     return {
       userData: [],
-      rlues: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '编辑员' }, {
+      rlues: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '招聘人' }, {
         key: 'user',
-        display_name: '用户'
+        display_name: '求职者'
       }],
-      searchname: '',
+      searchName: '',
       chooseRlue: 'editor',
       dialogVisible: false,
       pk_user: '',
@@ -140,7 +140,7 @@ export default {
       }]
     }
     const obj = {
-      searchname: this.searchname,
+      searchName: this.searchName,
       chooseRlue: this.chooseRlue
     }
     search(obj).then(response => {
@@ -151,7 +151,7 @@ export default {
   methods: {
     search() {
       const obj = {
-        searchname: this.searchname,
+        searchName: this.searchName,
         chooseRlue: this.chooseRlue
       }
       search(obj).then(response => {
@@ -183,7 +183,6 @@ export default {
       this.userType = row.userType
       this.IDCard = row.IDCard
       this.school = row.school
-
       this.dialogVisible = true
     },
     deleteUser(row) {

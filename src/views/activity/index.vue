@@ -22,28 +22,26 @@
         <br>
         <div slot="footer" class="el-dialog-footer">
           <el-button :disabled="isStart" @click="isSelectDate = false">取消</el-button>
-          <el-button type="primary" :loading="isStart" @click="isSelectDate = false">确定</el-button>
+          <el-button type="primary" :loading="isStart" @click="updateDate">确定</el-button>
         </div>
-        <!--        <div>-->
-        <!--        </div>-->
       </div>
       <br>
     </el-dialog>
     <div class="titleRow">
       <el-input
-        v-model="searchname"
+        v-model="searchName"
         placeholder="活动名"
         clearable
         style="width: 200px;"
         class="filter-item"
       />
       <el-select
-        v-model="chooseRlue"
+        v-model="chooseState"
         placeholder="状态"
         style="width: 180px"
         class="filter-item"
       >
-        <el-option v-for="item in rlues" :key="item.key" :label="item.display_name" :value="item.key" />
+        <el-option v-for="item in searchState" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="search">
         搜索
@@ -54,9 +52,12 @@
     </div>
     <div class="tableBody">
       <el-dialog
+        ref="dialog"
+        :destroy-on-close="true"
         title="账号信息"
         :visible.sync="dialogVisible"
         width="80%"
+        @open="open"
       >
         <el-steps :active="active" finish-status="success" simple style="margin-top: 20px">
           <el-step title="项目名称" />
@@ -76,11 +77,21 @@
           <el-button @click="dialogVisible = false">取 消</el-button>
         </span>
       </el-dialog>
-      <el-table :data="userData" :max-height="490" border highlight-current-row>
+      <el-table :data="actData" :max-height="490" border highlight-current-row>
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
-        <el-table-column prop="startTime" align="center" label="开始时间" width="150" show-overflow-tooltip />
-        <el-table-column prop="endTime" align="center" label="结束时间" width="150" show-overflow-tooltip />
+        <el-table-column prop="startTime" align="center" label="开始时间" width="150" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.state === 2 || scope.row.state === 3 ">{{ scope.row.startTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+            <span v-if="scope.row.state !== 2&& scope.row.state !==3">{{ '0-0-0' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="endTime" align="center" label="结束时间" width="150" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span v-if="scope.row.state === 2 || scope.row.state === 3 ">{{ scope.row.endTime | parseTime('{y}-{m}-{d} {h}:{i}:{s}') }}</span>
+            <span v-if="scope.row.state !== 2 && scope.row.state !== 3">{{ '0-0-0' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="job" align="center" label="职位" width="150" show-overflow-tooltip />
         <el-table-column prop="jobNumber" align="center" label="人数" width="100" show-overflow-tooltip />
         <el-table-column prop="state" align="center" label="状态" width="150" show-overflow-tooltip>
@@ -95,8 +106,9 @@
           <template slot-scope="scope">
             <el-button v-if="scope.row.state ===2" size="small" type="warning" @click="back(scope.row)">回退</el-button>
             <el-button v-if="scope.row.state === 1" type="success" size="small" @click="start(scope.row)">启动</el-button>
-            <el-button type="danger" size="small" @click="edit(scope.row)">修改</el-button>
-            <el-button v-if="scope.row.state !== 2" type="danger" size="small" @click="deleteUser(scope.row, scope.$index)">删除</el-button>
+            <el-button v-if="scope.row.state === 2" type="info" size="small" @click="endAct(scope.row)">结束</el-button>
+            <el-button v-if="scope.row.state !== 3" type="danger" size="small" @click="edit(scope.row)">修改</el-button>
+            <el-button v-if="scope.row.state !== 2" type="danger" size="small" @click="deleteAct(scope.row, scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -106,7 +118,7 @@
 </template>
 
 <script>
-import { getAllActs, getActInformation, insertAct, insertActScreens, updateAct, deleteScreens, deleteAct } from '@/api/act'
+import { getAllActs, getActInformation, getActByExample, insertAct, insertActScreens, updateAct, deleteScreens, deleteAct } from '@/api/act'
 import { mapGetters } from 'vuex'
 import View1 from './components/View1'
 import View2 from './components/View2'
@@ -116,13 +128,16 @@ export default {
   components: { View1, View2, View3 },
   data() {
     return {
-      userData: [],
-      rlues: [{ key: 'notStart', display_name: '未开始' }, { key: 'starting', display_name: '进行中' }, {
-        key: 'over',
+      actData: [],
+      searchState: [{ key: 0, display_name: '起草中' }, { key: 1, display_name: '未开始' }, { key: 2, display_name: '进行中' }, {
+        key: 3,
         display_name: '已结束'
+      }, {
+        key: 4,
+        display_name: '全部'
       }],
-      searchname: '',
-      chooseRlue: 'starting',
+      searchName: null,
+      chooseState: 4,
       dialogVisible: false,
       pk_user: '',
       diaData1: {
@@ -134,7 +149,10 @@ export default {
         company: '',
         state: 0
       },
-      diaData2: [],
+      diaData2: [{ name: '学历', filedName: 'education', screenCoin: '', screenValue1: '', screenValue2: '' },
+        { name: '年龄', filedName: 'age', screenCoin: '', screenValue1: '', screenValue2: '' },
+        { name: '意向城市', filedName: 'city', screenCoin: '', screenValue1: '', screenValue2: '' }, {
+          name: '所求职位', filedName: 'job', screenCoin: '', screenValue1: '', screenValue2: '' }],
       diaData3: {
         startTime: '',
         endTime: ''
@@ -170,7 +188,8 @@ export default {
       },
       active: 0,
       dateValue: [],
-      isSelectDate: false // 是否显示时间选择窗口
+      isSelectDate: false, // 是否显示时间选择窗口
+      chooseData: ''
     }
   },
   computed: {
@@ -181,12 +200,46 @@ export default {
   },
   mounted() {
     getAllActs().then(response => {
-      console.log(response)
-      this.userData = response.acts
+      this.actData = response.acts
     })
   },
   methods: {
+    updateDate() {
+      this.chooseData.state = 2
+      this.chooseData.startTime = new Date(this.dateValue[0]).getTime()
+      this.chooseData.endTime = new Date(this.dateValue[1]).getTime()
+      updateAct(this.chooseData).then(response => {
+        this.$notify({
+          type: 'success',
+          message: '启动成功!'
+        })
+      })
+      this.isSelectDate = false
+    },
+    open() {
+      this.active = 0
+    },
     search() {
+      if (this.chooseState === 4) {
+        getAllActs().then(response => {
+          this.actData = response.acts
+        })
+      } else {
+        getActByExample({ chooseState: this.chooseState, searchName: this.searchName }).then(
+          response => {
+            this.actData = response.acts
+          }
+        )
+      }
+    },
+    endAct(row) {
+      row.state = 3
+      updateAct(row).then(response => {
+        this.$notify({
+          type: 'success',
+          message: '结束活动完成!'
+        })
+      })
     },
     back(row) {
       row.state = 1
@@ -195,6 +248,7 @@ export default {
     start(row) {
       this.dateValue = [new Date(), new Date()]
       this.isSelectDate = true
+      this.chooseData = row
     },
     add() {
       this.diaData1 = {
@@ -217,10 +271,13 @@ export default {
       this.diaData1 = row
       this.dialogVisible = true
     },
-    deleteUser(row, index) {
-      console.log(row)
+    deleteAct(row, index) {
       deleteAct(row).then(response => {
-        this.userData.splice(index, 1)
+        this.actData.splice(index, 1)
+        this.$notify({
+          type: 'success',
+          message: '删除成功!'
+        })
       })
     },
     next() {
@@ -247,10 +304,13 @@ export default {
       if (this.active === 3) {
         this.diaData1.state = 1
       }
-
-      this.updateInsert(this.diaData1).then(response => {
+      const obj = {
+        re1: this.diaData1,
+        re2: this.diaData2
+      }
+      this.updateInsert(obj).then(response => {
         if (response.act !== undefined) {
-          this.userData.push(response.act)
+          this.actData.push(response.act)
         }
       })
 
