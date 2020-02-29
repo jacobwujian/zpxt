@@ -28,23 +28,9 @@ export function insertAct(data) {
     data
   })
 }
-export function insertActScreens(data) {
-  return request({
-    url: '/act/insertActScreens',
-    method: 'post',
-    data
-  })
-}
 export function updateAct(data) {
   return request({
     url: '/act/updateAct',
-    method: 'post',
-    data
-  })
-}
-export function deleteScreens(data) {
-  return request({
-    url: '/act/deleteScreens',
     method: 'post',
     data
   })

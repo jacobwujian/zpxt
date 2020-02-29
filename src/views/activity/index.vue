@@ -51,33 +51,8 @@
       </el-button>
     </div>
     <div class="tableBody">
-      <el-dialog
-        ref="dialog"
-        :destroy-on-close="true"
-        title="账号信息"
-        :visible.sync="dialogVisible"
-        width="80%"
-        @open="open"
-      >
-        <el-steps :active="active" finish-status="success" simple style="margin-top: 20px">
-          <el-step title="项目名称" />
-          <el-step title="过滤条件" />
-          <el-step title="起止时间" />
-        </el-steps>
-        <div style="height: 400px;margin: 30px">
-          <view1 v-if="active === 0" ref="view1" :dia-data1="diaData1" />
-          <view2 v-if="active === 1" ref="view2" :dia-data2="diaData2" />
-          <view3 v-if="active === 3" ref="view3" :dia-data3="diaData3" />
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button v-if="active===3" type="primary" @click="updateOrInsert">确 定</el-button>
-          <el-button v-if="active!==3" type="primary" @click="updateOrInsert">暂 存</el-button>
-          <el-button v-if="active!==0" style="margin-top: 12px;" @click="font">上一步</el-button>
-          <el-button v-if="active!==3" style="margin-top: 12px;" @click="next">下一步</el-button>
-          <el-button @click="dialogVisible = false">取 消</el-button>
-        </span>
-      </el-dialog>
-      <el-table :data="actData" :max-height="490" border highlight-current-row>
+      <ActView :act-data="actData" :dialog-visible="dialogVisible" :disabled="false" @close="close()" />
+      <el-table :data="actsData" :max-height="490" border highlight-current-row>
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
         <el-table-column prop="startTime" align="center" label="开始时间" width="150" show-overflow-tooltip>
@@ -118,17 +93,16 @@
 </template>
 
 <script>
-import { getAllActs, getActInformation, getActByExample, insertAct, insertActScreens, updateAct, deleteScreens, deleteAct } from '@/api/act'
+import { getAllActs, getActByExample, insertAct, updateAct, deleteAct } from '@/api/act'
 import { mapGetters } from 'vuex'
-import View1 from './components/View1'
-import View2 from './components/View2'
-import View3 from './components/View3'
+import ActView from '../../components/ActView/actView'
+
 export default {
   name: 'Index',
-  components: { View1, View2, View3 },
+  components: { ActView },
   data() {
     return {
-      actData: [],
+      actsData: [],
       searchState: [{ key: 0, display_name: '起草中' }, { key: 1, display_name: '未开始' }, { key: 2, display_name: '进行中' }, {
         key: 3,
         display_name: '已结束'
@@ -138,24 +112,21 @@ export default {
       }],
       searchName: null,
       chooseState: 4,
+      chooseAct: '',
       dialogVisible: false,
       pk_user: '',
-      diaData1: {
+      actData: {
         act_name: '',
-        creator: '',
+        creator: this.name,
         job: '',
         jobNumber: '',
         introduction: '',
         company: '',
-        state: 0
-      },
-      diaData2: [{ name: '学历', filedName: 'education', screenCoin: '', screenValue1: '', screenValue2: '' },
-        { name: '年龄', filedName: 'age', screenCoin: '', screenValue1: '', screenValue2: '' },
-        { name: '意向城市', filedName: 'city', screenCoin: '', screenValue1: '', screenValue2: '' }, {
-          name: '所求职位', filedName: 'job', screenCoin: '', screenValue1: '', screenValue2: '' }],
-      diaData3: {
-        startTime: '',
-        endTime: ''
+        state: 0,
+        address: '',
+        salary: '',
+        startTime: null,
+        endTime: null
       },
       role: '',
       isStart: false, // 是否可以点击启动确认按钮
@@ -188,8 +159,7 @@ export default {
       },
       active: 0,
       dateValue: [],
-      isSelectDate: false, // 是否显示时间选择窗口
-      chooseData: ''
+      isSelectDate: false // 是否显示时间选择窗口
     }
   },
   computed: {
@@ -199,16 +169,35 @@ export default {
     ])
   },
   mounted() {
-    getAllActs().then(response => {
-      this.actData = response.acts
-    })
+    this.reflash()
   },
   methods: {
+    reflash() {
+      getAllActs().then(response => {
+        this.actsData = response.acts
+      })
+      this.actData = {
+        act_name: '',
+        creator: this.name,
+        job: '',
+        jobNumber: '',
+        introduction: '',
+        company: '',
+        state: 0,
+        address: '',
+        salary: '',
+        startTime: null,
+        endTime: null
+      }
+    },
+    close() {
+      this.dialogVisible = false
+    },
     updateDate() {
-      this.chooseData.state = 2
-      this.chooseData.startTime = new Date(this.dateValue[0]).getTime()
-      this.chooseData.endTime = new Date(this.dateValue[1]).getTime()
-      updateAct(this.chooseData).then(response => {
+      this.actData.state = 2
+      this.actData.startTime = new Date(this.dateValue[0]).getTime()
+      this.actData.endTime = new Date(this.dateValue[1]).getTime()
+      updateAct(this.actData).then(response => {
         this.$notify({
           type: 'success',
           message: '启动成功!'
@@ -248,27 +237,26 @@ export default {
     start(row) {
       this.dateValue = [new Date(), new Date()]
       this.isSelectDate = true
-      this.chooseData = row
+      this.actData = row
     },
     add() {
-      this.diaData1 = {
+      this.actData = {
         act_name: '',
         creator: this.name,
         job: '',
         jobNumber: '',
         introduction: '',
         company: '',
-        state: 0
-      }
-      this.diaData2 = []
-      this.diaData3 = {
+        state: 0,
+        address: '',
+        salary: '',
         startTime: '',
         endTime: ''
       }
       this.dialogVisible = true
     },
     edit(row) {
-      this.diaData1 = row
+      this.actData = row
       this.dialogVisible = true
     },
     deleteAct(row, index) {
@@ -283,6 +271,7 @@ export default {
     next() {
       const canNext = this.verify()
       if (!canNext) {
+        console.log('cant')
         return
       }
       if (this.active < 4) {
@@ -302,13 +291,10 @@ export default {
     },
     updateOrInsert() {
       if (this.active === 3) {
-        this.diaData1.state = 1
+        this.actData.state = 1
       }
-      const obj = {
-        re1: this.diaData1,
-        re2: this.diaData2
-      }
-      this.updateInsert(obj).then(response => {
+
+      this.updateInsert(this.actData).then(response => {
         if (response.act !== undefined) {
           this.actData.push(response.act)
         }
@@ -317,7 +303,7 @@ export default {
       this.dialogVisible = false
     },
     updateInsert(data) {
-      if (this.diaData1.pk_act === undefined || this.diaData1.pk_act === '') {
+      if (this.actData.pk_act === undefined || this.actData.pk_act === '') {
         return insertAct(data)
       } else {
         return updateAct(data)

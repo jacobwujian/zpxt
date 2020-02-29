@@ -1,6 +1,6 @@
 <template>
   <el-card class="top-container">
-
+    <ActView :act-data="actData" :dialog-visible="dialogVisible" :disabled="true" @close="close()" />
     <div class="titleRow">
       <el-input
         v-model="searchName"
@@ -22,9 +22,14 @@
       </el-button>
     </div>
     <div class="tableBody">
-      <el-table>
+      <el-table :data="actsData">
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
+        <el-table-column align="center" label="操作" width="350">
+          <template slot-scope="scope">
+            <el-button size="small" type="warning" @click="view(scope.row)">详情</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div />
@@ -33,25 +38,35 @@
 
 <script>
 import { getActsForUser, getActInformation, getActByExample, insertAct, insertActScreens, updateAct, deleteScreens, deleteAct } from '@/api/act'
-
+import ActView from '../../components/ActView/actView'
 export default {
   name: 'Index',
+  components: { ActView },
   data() {
     return {
-      actData: [],
+      dialogVisible: false,
+      actsData: [],
+      actData: {},
       searchName: '',
       job: '',
-      jobs: [{key: 1, display_name: 'wang'}]
+      jobs: [{ key: 1, display_name: 'wang' }]
     }
   },
   mounted() {
     getActsForUser().then(response => {
-      this.actData = response.acts
+      this.actsData = response.acts
     })
   },
   methods: {
     search() {
 
+    },
+    view(row) {
+      this.actData = row
+      this.dialogVisible = true
+    },
+    close() {
+      this.dialogVisible = false
     }
   }
 }

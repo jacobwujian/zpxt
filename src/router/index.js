@@ -111,7 +111,7 @@ export const asyncRoutes = [
         path: 'index',
         component: () => import('@/views/companyInfo/index'),
         name: '公司信息',
-        meta: { title: '公司信息', icon: 'edit', roles: ['editor'] }
+        meta: { title: '公司信息', icon: 'user', roles: ['editor'] }
       }
     ]
   },

@@ -5,7 +5,7 @@
     <br>
     <div class="block">
       <el-date-picker
-        v-model="diaData3.startTime"
+        v-model="actData.startTime"
         type="datetime"
         placeholder="选择开始时间"
         default-time="00:00:00"
@@ -19,7 +19,7 @@
     <br>
     <div class="block">
       <el-date-picker
-        v-model="diaData3.endTime"
+        v-model="actData.endTime"
         type="datetime"
         placeholder="选择开始时间结束"
         default-time="23:59:59"
@@ -34,14 +34,17 @@
 export default {
   name: 'View3',
   props: {
-    diaData3: {
+    actData: {
       type: Object,
       default: () => {
         return {
-          startTime: '',
-          endTime: ''
+          startTime: null,
+          endTime: null
         }
       }
+    },
+    disabled: {
+      type: Boolean
     }
   }
 }

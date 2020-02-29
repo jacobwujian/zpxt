@@ -1,19 +1,19 @@
 <template>
   <div>
 
-    <el-form ref="form" class="el-form" :rules="rules" :label-position="labelPosition" :model="diaData1">
+    <el-form ref="form" class="el-form" :rules="rules" :label-position="labelPosition" :model="actData">
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="招聘活动名:" prop="act_name">
-              <el-input v-model="diaData1.act_name" class="el-input-name" maxlength="50" />
+              <el-input v-model="actData.act_name" class="el-input-name" maxlength="50" :disabled="disabled" />
             </el-form-item>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="活动创建人:" prop="creator">
-              <el-input disabled v-model="diaData1.creator" class="el-input-ddr" maxlength="50" />
+              <el-input v-model="actData.creator" disabled class="el-input-ddr" maxlength="50" />
             </el-form-item>
           </div>
         </el-col>
@@ -23,17 +23,31 @@
           <div class="grid-content bg-purple">
             <el-form-item label="活动提供岗位:" prop="job">
               <el-select
-                v-model="diaData1.job"
+                v-model="actData.job"
                 placeholder="职位"
               >
-                <el-option v-for="item in jobs" :key="item.name" :label="item.name" :value="item.name" />
-              </el-select>             </el-form-item>
+                <el-option
+                  v-for="item in jobs"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                  :disabled="disabled"
+                />
+              </el-select>
+            </el-form-item>
           </div>
         </el-col>
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="岗位人数:" prop="jobNumber">
-              <el-input-number v-model="diaData1.jobNumber" :precision="0" :min="1" class="el-input-ddr" maxlength="50" />
+              <el-input-number
+                v-model="actData.jobNumber"
+                :precision="0"
+                :min="1"
+                class="el-input-ddr"
+                maxlength="50"
+                :disabled="disabled"
+              />
             </el-form-item>
           </div>
         </el-col>
@@ -42,14 +56,25 @@
         <el-col :span="12">
           <div class="grid-content bg-purple">
             <el-form-item label="活动所属公司:" prop="company">
-              <el-input v-model="diaData1.company" class="el-input-name" maxlength="50" />
+              <el-input v-model="actData.company" class="el-input-name" maxlength="50" :disabled="disabled" />
             </el-form-item>
           </div>
         </el-col>
       </el-row>
       <el-row>
-        <el-form-item label="活动介绍:" prop="introduction">
-          <el-input v-model="diaData1.introduction" :autosize="{ minRows: 8}" type="textarea" />
+        <el-form-item label="地址:" prop="address">
+          <el-input v-model="actData.address" class="el-input-name" maxlength="50" :disabled="disabled" />
+        </el-form-item>
+      </el-row>
+      <el-row>
+        <el-form-item label="薪资:" prop="salary">
+          <el-input
+            v-model="actData.salary"
+            class="el-input-name"
+            maxlength="50"
+            placeholder="例如：10k~15k"
+            :disabled="disabled"
+          />
         </el-form-item>
       </el-row>
     </el-form>
@@ -58,10 +83,11 @@
 
 <script>
 import { getChildren, getRef } from '../../../api/ref'
+
 export default {
   name: 'View1',
   props: {
-    diaData1: {
+    actData: {
       type: Object,
       default: () => {
         return {
@@ -69,10 +95,14 @@ export default {
           creator: '',
           job: '',
           jobNumber: 1,
-          introduction: '',
+          address: '',
+          salary: '',
           company: ''
         }
       }
+    },
+    disabled: {
+      type: Boolean
     }
   },
   data() {
@@ -95,7 +125,10 @@ export default {
         company: [
           { required: true, message: ' ', trigger: 'blur' }
         ],
-        introduction: [
+        address: [
+          { required: true, message: ' ', trigger: 'blur' }
+        ],
+        salary: [
           { required: true, message: ' ', trigger: 'blur' }
         ]
       }
@@ -124,18 +157,20 @@ export default {
 </script>
 
 <style scoped>
-  .el-form{
+  .el-form {
     padding-left: 5%;
     padding-right: 5%;
     height: 40vh;
   }
-  .el-input-name{
+
+  .el-input-name {
     width: 80%;
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
-  .el-input-ddr{
+
+  .el-input-ddr {
     width: 80%;
   }
 </style>

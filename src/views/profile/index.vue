@@ -13,7 +13,7 @@
               <el-tab-pane label="简历" name="account">
                 <account :user="user" />
               </el-tab-pane>
-              <el-tab-pane label="Activity" name="activity">
+              <el-tab-pane label="工作经历" name="activity">
                 <activity />
               </el-tab-pane>
               <el-tab-pane label="Timeline" name="timeline">
