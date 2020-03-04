@@ -1,51 +1,37 @@
 <template>
   <div>
-    <label>开始时间:</label>
-    <br>
-    <br>
-    <div class="block">
-      <el-date-picker
-        v-model="actData.startTime"
-        type="datetime"
-        placeholder="选择开始时间"
-        default-time="00:00:00"
-        value-format="timestamp">
-      </el-date-picker>
-    </div>
-    <br>
-    <br>
-    <label>结束时间:</label>
-    <br>
-    <br>
-    <div class="block">
-      <el-date-picker
-        v-model="actData.endTime"
-        type="datetime"
-        placeholder="选择开始时间结束"
-        default-time="23:59:59"
-        value-format="timestamp"
-      >
-      </el-date-picker>
-    </div>
+    <el-form :model="company">
+      <el-form-item label="公司名称">
+        <el-input v-model="company.name" :disabled="isEdit" />
+      </el-form-item>
+      <el-form-item label="公司所在地">
+        <el-input v-model="company.address" :disabled="isEdit" />
+      </el-form-item>
+      <el-form-item label="公司介绍">
+        <el-input v-model="company.introduction" :disabled="isEdit" type="textarea" />
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script>
+import { getCompany } from '@/api/company'
 export default {
   name: 'View3',
-  props: {
-    actData: {
-      type: Object,
-      default: () => {
-        return {
-          startTime: null,
-          endTime: null
-        }
-      }
-    },
-    disabled: {
-      type: Boolean
+  data() {
+    return {
+      company: {
+        name: '',
+        address: '',
+        introduction: ''
+      },
+      isEdit: true
     }
+  },
+  mounted() {
+    getCompany().then(response => {
+      this.company = response.company
+    })
   }
 }
 </script>

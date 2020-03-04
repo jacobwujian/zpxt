@@ -51,7 +51,7 @@
       </el-button>
     </div>
     <div class="tableBody">
-      <ActView :act-data="actData" :dialog-visible="dialogVisible" :disabled="false" @close="close()" />
+      <ActView :act-data="actData" :dialog-visible="dialogVisible" :disabled="false" @close="close()" @opea="opea" />
       <el-table :data="actsData" :max-height="490" border highlight-current-row>
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
@@ -193,6 +193,10 @@ export default {
     close() {
       this.dialogVisible = false
     },
+    opea(obj) {
+      this.dialogVisible = false
+      this.actsData.push(obj)
+    },
     updateDate() {
       this.actData.state = 2
       this.actData.startTime = new Date(this.dateValue[0]).getTime()
@@ -204,9 +208,6 @@ export default {
         })
       })
       this.isSelectDate = false
-    },
-    open() {
-      this.active = 0
     },
     search() {
       if (this.chooseState === 4) {
@@ -261,63 +262,12 @@ export default {
     },
     deleteAct(row, index) {
       deleteAct(row).then(response => {
-        this.actData.splice(index, 1)
+        this.actsData.splice(index, 1)
         this.$notify({
           type: 'success',
           message: '删除成功!'
         })
       })
-    },
-    next() {
-      const canNext = this.verify()
-      if (!canNext) {
-        console.log('cant')
-        return
-      }
-      if (this.active < 4) {
-        this.active++
-        if (this.active === 2) {
-          this.active++
-        }
-      }
-    },
-    font() {
-      if (this.active > 0) {
-        this.active--
-        if (this.active === 2) {
-          this.active--
-        }
-      }
-    },
-    updateOrInsert() {
-      if (this.active === 3) {
-        this.actData.state = 1
-      }
-
-      this.updateInsert(this.actData).then(response => {
-        if (response.act !== undefined) {
-          this.actData.push(response.act)
-        }
-      })
-
-      this.dialogVisible = false
-    },
-    updateInsert(data) {
-      if (this.actData.pk_act === undefined || this.actData.pk_act === '') {
-        return insertAct(data)
-      } else {
-        return updateAct(data)
-      }
-    },
-    verify() {
-      // 校验
-      if (this.active === 0) {
-        return this.$refs.view1.verify()
-      } else if (this.active === 1) {
-        return true
-      } else if (this.active === 3) {
-        return true
-      }
     }
   }
 }

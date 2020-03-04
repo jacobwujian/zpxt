@@ -10,12 +10,12 @@
     <el-steps :active="active" finish-status="success" simple style="margin-top: 20px">
       <el-step title="活动条件" />
       <el-step title="活动介绍" />
-      <el-step title="起止时间" />
+      <el-step title="公司信息" />
     </el-steps>
     <div style="height: 400px;margin: 30px">
-      <view1 v-if="active === 0" ref="view1" :act-data="actData" :disabled="disabled"/>
-      <view2 v-if="active === 1" ref="view2" :act-data="actData" :disabled="disabled"/>
-      <view3 v-if="active === 3" ref="view3" :act-data="actData" :disabled="disabled"/>
+      <view1 v-if="active === 0" ref="view1" :act-data="actData" :disabled="disabled" />
+      <view2 v-if="active === 1" ref="view2" :act-data="actData" :disabled="disabled" />
+      <view3 v-if="active === 3" ref="view3" />
     </div>
     <span slot="footer" class="dialog-footer">
       <el-button v-if="active===3" type="primary" :disabled="disabled" @click="updateOrInsert">确 定</el-button>
@@ -72,10 +72,12 @@ export default {
     open() {
       this.active = 0
     },
+    opea(obj) {
+      this.$emit('opea', obj)
+    },
     next() {
       const canNext = this.verify()
       if (!canNext) {
-        console.log('cant')
         return
       }
       if (this.active < 4) {
@@ -99,10 +101,11 @@ export default {
       }
       this.updateInsert(this.actData).then(response => {
         if (response.act !== undefined) {
-          this.actData.push(response.act)
+          this.opea(response.act)
+        } else {
+          this.close()
         }
       })
-      this.dialogVisible = false
     },
     updateInsert(data) {
       if (this.actData.pk_act === undefined || this.actData.pk_act === '') {
