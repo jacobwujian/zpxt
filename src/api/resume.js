@@ -36,20 +36,6 @@ export function getSkills(data) {
     data
   })
 }
-export function deleteSkills(data) {
-  return request({
-    url: '/resume/deleteSkills',
-    method: 'post',
-    data
-  })
-}
-export function insertSkill(data) {
-  return request({
-    url: '/resume/insertSkill',
-    method: 'post',
-    data
-  })
-}
 export function updateSkills(data) {
   return request({
     url: '/resume/updateSkills',
