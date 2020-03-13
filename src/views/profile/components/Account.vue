@@ -8,7 +8,7 @@
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload"
       >
-        <el-image v-if="resume.picture" :src="'data:image/jepg;base64,' + resume.picture" class="avatar" lazy></el-image>
+        <el-image v-if="resume.picture" :src="'data:image/jepg;base64,' + resume.picture" class="avatar" lazy />
         <i v-else class="el-icon-plus avatar-uploader-icon" />
       </el-upload>
     </div>
@@ -229,10 +229,10 @@ export default {
       this.resume = response.data
       this.action = this.action + this.resume.pk_resume
       this.eduData = []
-      this.eduData.push({ name: response.data.school1, type: response.data.schoolType1, startTime: response.data.start1, endTime: response.data.end1 })
-      this.eduData.push({ name: response.data.school2, type: response.data.schoolType2, startTime: response.data.start2, endTime: response.data.end2 })
-      this.eduData.push({ name: response.data.school3, type: response.data.schoolType3, startTime: response.data.start3, endTime: response.data.end3 })
-      const city = response.data.city.substring(2, response.data.city.length - 2)
+      this.eduData.push({ name: this.resume.school1, type: this.resume.schoolType1, startTime: this.resume.start1, endTime: this.resume.end1 })
+      this.eduData.push({ name: this.resume.school2, type: this.resume.schoolType2, startTime: this.resume.start2, endTime: this.resume.end2 })
+      this.eduData.push({ name: this.resume.school3, type: this.resume.schoolType3, startTime: this.resume.start3, endTime: this.resume.end3 })
+      const city = this.resume.city.substring(2, this.resume.city.length - 2)
       this.resume.city = city.split('], [')
       for (let i = 0; i < this.resume.city.length; i++) {
         const sr = this.resume.city[i]

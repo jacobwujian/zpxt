@@ -25,6 +25,11 @@
       <el-table :data="actsData">
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
+        <el-table-column prop="company" align="center" label="公司名" show-overflow-tooltip />
+        <el-table-column prop="address" align="center" label="工作地点" show-overflow-tooltip />
+        <el-table-column prop="job" align="center" label="岗位名称" show-overflow-tooltip />
+        <el-table-column prop="salary" align="center" label="薪资" show-overflow-tooltip />
+        <el-table-column prop="jobNumber" align="center" label="人数" show-overflow-tooltip />
         <el-table-column align="center" label="操作" width="350">
           <template slot-scope="scope">
             <el-button size="small" type="warning" @click="view(scope.row)">详情</el-button>
@@ -37,13 +42,15 @@
 </template>
 
 <script>
-import { getActsForUser, getActInformation, getActByExample, insertAct, insertActScreens, updateAct, deleteScreens, deleteAct } from '@/api/act'
+import { getActsForUser } from '@/api/act'
+import { getResume } from '../../api/resume'
 import ActView from '../../components/ActView/actView'
 export default {
   name: 'Index',
   components: { ActView },
   data() {
     return {
+      resume: '',
       dialogVisible: false,
       actsData: [],
       actData: {},
@@ -56,6 +63,9 @@ export default {
     getActsForUser().then(response => {
       this.actsData = response.acts
     })
+    getResume().then(response => {
+      this.resume = response.data
+    })
   },
   methods: {
     search() {
@@ -63,6 +73,7 @@ export default {
     },
     view(row) {
       this.actData = row
+      this.$set(this.actData, 'pk_resume', this.resume.pk_resume)
       this.dialogVisible = true
     },
     close() {

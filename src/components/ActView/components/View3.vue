@@ -18,6 +18,16 @@
 import { getCompany } from '@/api/company'
 export default {
   name: 'View3',
+  props: {
+    actData: {
+      type: Object,
+      default: () => {
+        return {
+          pk_user: null
+        }
+      }
+    }
+  },
   data() {
     return {
       company: {
@@ -29,7 +39,7 @@ export default {
     }
   },
   mounted() {
-    getCompany().then(response => {
+    getCompany(this.actData).then(response => {
       this.company = response.company
     })
   }

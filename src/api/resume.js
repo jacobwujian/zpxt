@@ -7,11 +7,10 @@ export function updateResume(data) {
     data
   })
 }
-export function getResume(data) {
+export function getResume() {
   return request({
     url: '/resume/getResume',
-    method: 'post',
-    data
+    method: 'post'
   })
 }
 export function set(data) {

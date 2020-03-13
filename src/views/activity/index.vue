@@ -82,7 +82,7 @@
             <el-button v-if="scope.row.state ===2" size="small" type="warning" @click="back(scope.row)">回退</el-button>
             <el-button v-if="scope.row.state === 1" type="success" size="small" @click="start(scope.row)">启动</el-button>
             <el-button v-if="scope.row.state === 2" type="info" size="small" @click="endAct(scope.row)">结束</el-button>
-            <el-button v-if="scope.row.state !== 3" type="danger" size="small" @click="edit(scope.row)">修改</el-button>
+            <el-button v-if="scope.row.state === 1" type="danger" size="small" @click="edit(scope.row)">修改</el-button>
             <el-button v-if="scope.row.state !== 2" type="danger" size="small" @click="deleteAct(scope.row, scope.$index)">删除</el-button>
           </template>
         </el-table-column>
@@ -192,6 +192,7 @@ export default {
     },
     close() {
       this.dialogVisible = false
+      this.reflash()
     },
     opea(obj) {
       this.dialogVisible = false

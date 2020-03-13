@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function updateResult(data) {
   return request({
-    url: '/result/updatResult',
+    url: '/result/updateResult',
     method: 'post',
     data
   })

@@ -66,3 +66,10 @@ export function checkName(data) {
     data
   })
 }
+export function deleteUser(data) {
+  return request({
+    url: '/user/deleteUser',
+    method: 'post',
+    data
+  })
+}

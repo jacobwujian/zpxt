@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function getCompany() {
+export function getCompany(data) {
   return request({
     url: '/company/getCompany',
-    method: 'GET'
+    method: 'post',
+    data
   })
 }
 export function insertCompany(data) {

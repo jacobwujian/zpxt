@@ -12,12 +12,12 @@
         class="filter-item"
       />
       <el-select
-        v-model="chooseRlue"
+        v-model="chooseRule"
         placeholder="账号类型"
         style="width: 180px"
         class="filter-item"
       >
-        <el-option v-for="item in rlues" :key="item.key" :label="item.display_name" :value="item.key" />
+        <el-option v-for="item in rules" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="search">
         搜索
@@ -61,7 +61,7 @@
               style="width: 380px"
               class="filter-item"
             >
-              <el-option v-for="item in rlues" :key="item.key" :label="item.display_name" :value="item.key" />
+              <el-option v-for="item in rules" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
           </el-form-item>
           <el-form-item label="自我介绍">
@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { insertUser, updateUser, search } from '../../api/user'
+import { insertUser, updateUser, search, deleteUser } from '../../api/user'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -105,12 +105,12 @@ export default {
   data() {
     return {
       userData: [],
-      rlues: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '招聘人' }, {
+      rules: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '招聘人' }, {
         key: 'user',
         display_name: '求职者'
       }],
       searchName: '',
-      chooseRlue: 'editor',
+      chooseRule: 'editor',
       dialogVisible: false,
       pk_user: '',
       name: '',
@@ -133,18 +133,17 @@ export default {
   mounted() {
     this.role = this.roles[0]
     if (this.role === 'editor') {
-      this.chooseRlue = 'user'
-      this.rlues = [{
+      this.chooseRule = 'user'
+      this.rules = [{
         key: 'user',
         display_name: '用户'
       }]
     }
     const obj = {
       searchName: this.searchName,
-      chooseRlue: this.chooseRlue
+      chooseRule: this.chooseRule
     }
     search(obj).then(response => {
-      console.log(response)
       this.userData = response.data
     })
   },
@@ -152,10 +151,9 @@ export default {
     search() {
       const obj = {
         searchName: this.searchName,
-        chooseRlue: this.chooseRlue
+        chooseRule: this.chooseRule
       }
       search(obj).then(response => {
-        console.log(response)
         this.userData = response.data
       })
     },
@@ -186,7 +184,13 @@ export default {
       this.dialogVisible = true
     },
     deleteUser(row) {
-
+      deleteUser(row).then(response => {
+        this.$notify({
+          type: 'success',
+          message: '删除成功!'
+        })
+        this.search()
+      })
     },
     updateOrInsert() {
       const obj = {
@@ -212,7 +216,6 @@ export default {
         })
       } else {
         updateUser(obj).then(response => {
-          console.log(response)
           this.dialogVisible = false
         })
       }
