@@ -73,14 +73,23 @@ export default {
       resultCount: [],
       commited: false }
   },
-  mounted() {
-    if (this.actData.state === 2) {
-      getResult(this.actData).then(response => {
-        this.result = response['res']
-        if (response['res']['resultCount'] !== undefined) {
-          this.resultCount = response['res']['resultCount']
+  watch: {
+    'actData': {
+      handler: function(val, oldval) {
+        if (this.actData.state === 2) {
+          getResult(this.actData).then(response => {
+            this.result = response['res']
+            if (response['res']['resultCount'] !== undefined) {
+              this.resultCount = response['res']['resultCount'].split(',')
+              if (this.resultCount.indexOf(String(this.actData.pk_resume)) === -1) {
+                this.commited = false
+              } else {
+                this.commited = true
+              }
+            }
+          })
         }
-      })
+      }
     }
   },
   methods: {
