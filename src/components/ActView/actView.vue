@@ -19,7 +19,6 @@
       <view3 v-if="active === 3" ref="view3" :act-data="actData" />
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button v-if="disabled" type="danger" :disabled="commited" @click="updateActResult"><label v-if="!commited">投简历</label><label v-else>已投简</label></el-button>
       <el-button v-if="active===3&&!disabled" type="primary" @click="updateOrInsert">确 定</el-button>
       <el-button v-if="active!==3&&!disabled" type="primary" @click="updateOrInsert">暂 存</el-button>
       <el-button v-if="active!==0" style="margin-top: 12px;" @click="font">上一步</el-button>
@@ -31,7 +30,6 @@
 
 <script>
 import { insertAct, updateAct } from '@/api/act'
-import { getResult, updateResult } from '../../api/result'
 
 import View1 from './components/View1'
 import View2 from './components/View2'
@@ -72,25 +70,6 @@ export default {
       result: '',
       resultCount: [],
       commited: false }
-  },
-  watch: {
-    'actData': {
-      handler: function(val, oldval) {
-        if (this.actData.state === 2) {
-          getResult(this.actData).then(response => {
-            this.result = response['res']
-            if (response['res']['resultCount'] !== undefined) {
-              this.resultCount = response['res']['resultCount'].split(',')
-              if (this.resultCount.indexOf(String(this.actData.pk_resume)) === -1) {
-                this.commited = false
-              } else {
-                this.commited = true
-              }
-            }
-          })
-        }
-      }
-    }
   },
   methods: {
     close() {

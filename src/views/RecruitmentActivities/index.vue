@@ -33,7 +33,7 @@
         <el-table-column align="center" label="操作" width="350">
           <template slot-scope="scope">
             <el-button size="small" type="warning" @click="view(scope.row)">详情</el-button>
-            <el-button type="danger" :disabled="scope.row.resultCount.indexOf(String(scope.row.pk_resume)) !== -1" @click="updateActResult(scope.row)"><label v-if="scope.row.resultCount.indexOf(String(scope.row.pk_resume)) === -1">投简历</label><label v-else>已投简</label></el-button>
+            <el-button type="danger" :disabled="scope.row.resultCount.indexOf(String(resume.pk_resume)) !== -1" @click="updateActResult(scope.row)"><label v-if="scope.row.resultCount.indexOf(String(resume.pk_resume)) === -1">投简历</label><label v-else>已投简</label></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,18 +71,27 @@ export default {
   },
   methods: {
     updateActResult(row) {
+      let count = []
+      if (row.resultCount !== '') {
+        count = row.resultCount.split(',')
+      }
+      count.push(this.resume.pk_resume)
       const obj = {
         pk_act: row.pk_act,
-        resultCount: row.resultCount.toLocaleString()
+        resultCount: count.toLocaleString()
       }
-      updateActResultCount(obj)
+      updateActResultCount(obj).then(response => {
+        this.$notify({
+          type: 'success',
+          message: '投简成功!'
+        })
+      })
     },
     search() {
 
     },
     view(row) {
       this.actData = row
-      this.$set(this.actData, 'pk_resume', this.resume.pk_resume)
       this.dialogVisible = true
     },
     close() {
