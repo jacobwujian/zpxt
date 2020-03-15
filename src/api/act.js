@@ -48,3 +48,10 @@ export function getActsForUser() {
     method: 'GET'
   })
 }
+export function updateActResultCount(data) {
+  return request({
+    url: '/act/updateActResultCount',
+    method: 'post',
+    data
+  })
+}

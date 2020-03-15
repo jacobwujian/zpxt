@@ -33,6 +33,7 @@
         <el-table-column align="center" label="操作" width="350">
           <template slot-scope="scope">
             <el-button size="small" type="warning" @click="view(scope.row)">详情</el-button>
+            <el-button type="danger" :disabled="scope.row.resultCount.indexOf(String(scope.row.pk_resume)) !== -1" @click="updateActResult(scope.row)"><label v-if="scope.row.resultCount.indexOf(String(scope.row.pk_resume)) === -1">投简历</label><label v-else>已投简</label></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -42,7 +43,7 @@
 </template>
 
 <script>
-import { getActsForUser } from '@/api/act'
+import { getActsForUser, updateActResultCount } from '@/api/act'
 import { getResume } from '../../api/resume'
 import ActView from '../../components/ActView/actView'
 export default {
@@ -50,6 +51,7 @@ export default {
   components: { ActView },
   data() {
     return {
+      commited: true,
       resume: '',
       dialogVisible: false,
       actsData: [],
@@ -68,6 +70,13 @@ export default {
     })
   },
   methods: {
+    updateActResult(row) {
+      const obj = {
+        pk_act: row.pk_act,
+        resultCount: row.resultCount.toLocaleString()
+      }
+      updateActResultCount(obj)
+    },
     search() {
 
     },

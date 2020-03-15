@@ -141,14 +141,6 @@ export default {
         return updateAct(data)
       }
     },
-    updateActResult() {
-      this.resultCount.push(this.actData.pk_resume)
-      const obj = {
-        pk_act: this.actData.pk_act,
-        resultCount: this.resultCount.toLocaleString()
-      }
-      updateResult(obj)
-    },
     verify() {
       // 校验
       if (this.active === 0) {
