@@ -9,13 +9,21 @@
         style="width: 200px;"
         class="filter-item"
       />
+      <el-input
+        v-model="address"
+        placeholder="工作地"
+        clearable
+        style="width: 200px;"
+        class="filter-item"
+      />
       <el-select
         v-model="job"
         placeholder="职位"
         style="width: 180px"
         class="filter-item"
+        clearable
       >
-        <el-option v-for="item in jobs" :key="item.key" :label="item.display_name" :value="item.key" />
+        <el-option v-for="item in jobs" :key="item.pk_ref" :label="item.name" :value="item.name" />
       </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="search">
         搜索
@@ -46,6 +54,7 @@
 import { getActsForUser, updateActResultCount } from '@/api/act'
 import { getResume } from '../../api/resume'
 import ActView from '../../components/ActView/actView'
+import { getRef } from '@/api/ref'
 export default {
   name: 'Index',
   components: { ActView },
@@ -56,20 +65,32 @@ export default {
       dialogVisible: false,
       actsData: [],
       actData: {},
-      searchName: '',
-      job: '',
-      jobs: [{ key: 1, display_name: 'wang' }]
+      searchName: null,
+      job: null,
+      jobs: [],
+      address: null
     }
   },
   mounted() {
-    getActsForUser().then(response => {
-      this.actsData = response.acts
-    })
+    this.getActs()
     getResume().then(response => {
       this.resume = response.data
     })
+    getRef({ type: 78 }).then(response => {
+      this.jobs = response.data
+    })
   },
   methods: {
+    getActs() {
+      const obj = {
+        name: this.searchName === '' ? null : this.searchName,
+        job: this.job === '' ? null : this.job,
+        address: this.address === '' ? null : this.address
+      }
+      getActsForUser(obj).then(response => {
+        this.actsData = response.acts
+      })
+    },
     updateActResult(row) {
       let count = []
       if (row.resultCount !== '') {
@@ -85,10 +106,11 @@ export default {
           type: 'success',
           message: '投简成功!'
         })
+        row.resultCount = obj.resultCount
       })
     },
     search() {
-
+      this.getActs()
     },
     view(row) {
       this.actData = row

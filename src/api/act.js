@@ -42,10 +42,11 @@ export function deleteAct(data) {
     data
   })
 }
-export function getActsForUser() {
+export function getActsForUser(data) {
   return request({
     url: '/act/getActsForUser',
-    method: 'GET'
+    method: 'post',
+    data
   })
 }
 export function updateActResultCount(data) {

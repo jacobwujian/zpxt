@@ -134,8 +134,8 @@ export const asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/result/index'),
-        name: '活动详情',
-        meta: { title: '活动详情', icon: 'documentation', roles: ['editor'] }
+        name: '活动结果详情',
+        meta: { title: '活动结果详情', icon: 'documentation', roles: ['editor'] }
       }
     ]
   },
