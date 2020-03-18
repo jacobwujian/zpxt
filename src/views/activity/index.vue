@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { getAllActs, getActByExample, insertAct, updateAct, deleteAct } from '@/api/act'
+import { getAllActs, updateAct, deleteAct } from '@/api/act'
 import { mapGetters } from 'vuex'
 import ActView from '../../components/ActView/actView'
 
@@ -118,7 +118,7 @@ export default {
       actData: {
         act_name: '',
         creator: this.name,
-        job: '',
+        job: null,
         jobNumber: '',
         introduction: '',
         company: '',
@@ -169,17 +169,21 @@ export default {
     ])
   },
   mounted() {
-    this.reflash()
+    this.refurbish()
   },
   methods: {
-    reflash() {
-      getAllActs().then(response => {
+    refurbish() {
+      const obj = {
+        name: this.searchName === '' ? null : this.searchName,
+        state: this.chooseState === '' || this.chooseState === 4 ? null : this.chooseState
+      }
+      getAllActs(obj).then(response => {
         this.actsData = response.acts
       })
       this.actData = {
         act_name: '',
         creator: this.name,
-        job: '',
+        job: null,
         jobNumber: '',
         introduction: '',
         company: '',
@@ -192,7 +196,7 @@ export default {
     },
     close() {
       this.dialogVisible = false
-      this.reflash()
+      this.refurbish()
     },
     opea(obj) {
       this.dialogVisible = false
@@ -211,17 +215,7 @@ export default {
       this.isSelectDate = false
     },
     search() {
-      if (this.chooseState === 4) {
-        getAllActs().then(response => {
-          this.actData = response.acts
-        })
-      } else {
-        getActByExample({ chooseState: this.chooseState, searchName: this.searchName }).then(
-          response => {
-            this.actData = response.acts
-          }
-        )
-      }
+      this.refurbish()
     },
     endAct(row) {
       row.state = 3

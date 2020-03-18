@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function getAllActs() {
+export function getAllActs(data) {
   return request({
     url: '/act/getAllActs',
-    method: 'GET'
+    method: 'post',
+    data
   })
 }
 export function getActInformation(data) {

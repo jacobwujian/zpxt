@@ -54,7 +54,7 @@ export default {
   },
   methods: {
     getCompany() {
-      getCompany().then(response => {
+      getCompany({}).then(response => {
         this.company = response.company
       })
     },
