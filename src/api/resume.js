@@ -13,9 +13,9 @@ export function getResume() {
     method: 'post'
   })
 }
-export function set(data) {
+export function getResumes(data) {
   return request({
-    url: '/resume/getResume',
+    url: '/resume/getResumes',
     method: 'post',
     data
   })
