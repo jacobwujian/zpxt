@@ -324,9 +324,6 @@ export default {
   .eltree{
     height: 650px;
   }
-  /deep/.el-scrollbar__wrap{
-    overflow-x: hidden;
-  }
   .custom-tree-node {
     flex: 1;
     display: flex;

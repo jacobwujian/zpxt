@@ -31,21 +31,40 @@
           </div>
         </div>
       </div>
-
-      <div class="user-skills user-bio-section">
+      <el-dialog
+        title="增加技能"
+        :visible.sync="skillShow"
+        width="30%"
+        :before-close="handleClose"
+      >
+        <el-select
+          v-model="chooseSkill"
+          placeholder="技能"
+        >
+          <el-option v-for="item in skillsRef" :key="item.pk_ref" :label="item.name" :value="item.name" :disabled="skills.indexOf(item.name) !== -1" />
+        </el-select>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="skillShow = false;chooseSkill = ''">取 消</el-button>
+          <el-button :disabled="chooseSkill === ''" type="primary" @click="addSkill">确 定</el-button>
+        </span>
+      </el-dialog>
+      <div class="user-bio-section">
         <div class="user-bio-section-header"><svg-icon icon-class="skill" /><span>技能</span>
           <span>
-            <el-button v-if="!isEditSkill" type="text" icon="el-icon-edit" @click="isEditSkill = true" />
-            <el-button v-if="!isEditSkill" type="text" icon="el-icon-plus" @click="dialogVisible = true" />
-            <el-button v-if="isEditSkill" type="text" icon="el-icon-close" @click="isEditSkill = false" />
-            <el-button v-if="isEditSkill" type="text" icon="el-icon-check" @click="update" />
+            <el-button v-if="!isEditSkill" type="text" icon="el-icon-plus" @click="skillShow = true" />
           </span></div>
-        <div class="user-bio-section-body">
-          <div v-for="item in skills" :key="item.skillName" class="progress-item">
-            <span>{{item.skillName}}</span>
-            <el-slider v-model="item.skillValue" :disabled="!isEditSkill" />
-          </div>
-        </div>
+        <div class="user-skills user-bio-section-body">
+          <el-tag
+            v-for="tag in skills"
+            :key="tag"
+            closable
+            color="rgba(148, 102, 255, 0.17)"
+            :hit="true"
+            :disable-transitions="false"
+            @close="handleDelete(tag)"
+          >
+            {{ tag }}
+          </el-tag></div>
       </div>
     </div>
   </el-card>
@@ -54,6 +73,8 @@
 <script>
 import PanThumb from '@/components/PanThumb'
 import { updateUser } from '../../../api/user'
+import { getSkills, updateSkills } from '../../../api/resume'
+import { getRef } from '../../../api/ref'
 
 export default {
   components: { PanThumb },
@@ -78,12 +99,79 @@ export default {
       isEditSkill: false,
       value1: 10,
       skills: [],
-      dialogVisible: false
+      dialogVisible: false,
+      skillShow: false,
+      skillsRef: [],
+      chooseSkill: ''
     }
   },
   mounted() {
+    this.getSkill()
+    getRef({ type: 3 }).then(response => {
+      this.skillsRef = response.data
+    })
   },
   methods: {
+    addSkill() {
+      this.skills.push(this.chooseSkill)
+      this.chooseSkill = ''
+      this.skillShow = false
+      updateSkills({ skills: this.skills.toLocaleString() }).then(response => {
+        this.$message({
+          type: 'success',
+          message: '增加成功!'
+        })
+      }).catch(err => {
+        this.getSkill()
+        this.$message({
+          type: 'danger',
+          message: '增加失败!'
+        })
+      })
+    },
+    handleDelete(done, tag) {
+      this.$confirm('是否删除该标签?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.skills.splice(this.skills.indexOf(tag), 1)
+        updateSkills({ skills: this.skills.toLocaleString() }).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+        }).catch(err => {
+          this.getSkill()
+          this.$message({
+            type: 'danger',
+            message: '删除失败!'
+          })
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+          this.chooseSkill = ''
+        })
+        .catch(_ => {})
+    },
+    getSkill() {
+      getSkills().then(response => {
+        if (response.data === '') {
+          this.skills = []
+        } else {
+          this.skills = response.data.split(',')
+        }
+      })
+    },
     update() {
       this.isEdit = false
       const obj = {
@@ -98,13 +186,22 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .user-skills{
+    height: 300px;
+    overflow: auto;
+  }
+
+  .el-tag + .el-tag {
+    margin-top: 10px;
+    display: block;
+  }
 .box-center {
   margin: 0 auto;
   display: table;
 }
 
 .text-muted {
-  color: #777;
+  color: rgba(148, 102, 255, 0.17);
 }
 
 .user-profile {

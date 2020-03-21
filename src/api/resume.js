@@ -28,16 +28,42 @@ export function deleteResume(data) {
     data
   })
 }
-export function getSkills(data) {
+export function getSkills() {
   return request({
     url: '/resume/getSkills',
-    method: 'post',
-    data
+    method: 'get'
   })
 }
 export function updateSkills(data) {
   return request({
     url: '/resume/updateSkills',
+    method: 'post',
+    data
+  })
+}
+export function getWorks() {
+  return request({
+    url: '/resume/getWorks',
+    method: 'get'
+  })
+}
+export function updateWork(data) {
+  return request({
+    url: '/resume/updateWork',
+    method: 'post',
+    data
+  })
+}
+export function insertWork(data) {
+  return request({
+    url: '/resume/insertWork',
+    method: 'post',
+    data
+  })
+}
+export function deleteWork(data) {
+  return request({
+    url: '/resume/deleteWork',
     method: 'post',
     data
   })
