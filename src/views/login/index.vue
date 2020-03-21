@@ -1,48 +1,47 @@
 <template>
   <div class="login-container">
+    <el-dialog
+      title="注册账号"
+      :visible.sync="dialogVisible"
+      :center="true"
+      class="el-dialog-login"
+      @close="$refs.formData.clearValidate()"
+    >
+      <el-form ref="formData" :model="formData" :rules="rules">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="formData.name" style="width: 380px" @change="Check" />
+        </el-form-item>
+        <el-form-item label="账号" prop="userName">
+          <el-input v-model="formData.userName" style="width: 380px" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password1">
+          <el-input v-model="formData.password1" type="password" style="width: 380px" />
+        </el-form-item>
+        <el-form-item label="重复密码" prop="password2">
+          <el-input v-model="formData.password2" type="password" style="width: 380px" />
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="formData.phone" style="width: 380px" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          @click="dialogVisible = false;formData = {userType: 'user',
+                                                    name: null,
+                                                    userName: null,
+                                                    password1: null,
+                                                    password2: null,
+                                                    phone: null}"
+        >取 消</el-button>
+        <el-button type="primary" @click="insert">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
         <h3 class="title">招聘系统</h3>
       </div>
-      <el-dialog
-        title="注册账号"
-        :visible.sync="dialogVisible"
-        fullscreen
-        :center="true"
-        class="el-dialog-longin"
-      >
-        <el-form :rules="rules">
-          <el-form-item class="elbody" label="姓名">
-            <el-input v-model="name" style="width: 380px" @change="Check" />
-          </el-form-item>
-          <el-form-item class="elbody" label="账号">
-            <el-input v-model="userName" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="密码">
-            <el-input v-model="password" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="手机号">
-            <el-input v-model="phone" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="学校">
-            <el-input v-model="school" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="头像地址">
-            <el-input v-model="avatar" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="身份证号">
-            <el-input v-model="IDCard" style="width: 380px" />
-          </el-form-item>
-          <el-form-item class="elbody" label="个人标签">
-            <el-input v-model="introduction" type="textarea" style="width: 380px" />
-          </el-form-item>
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="insert">确 定</el-button>
-        </span>
-      </el-dialog>
       <el-form-item class="el-fo-it" prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -92,28 +91,20 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
 import { checkName, insertUser } from '../../api/user'
 
 export default {
   name: 'Login',
   data() {
-    const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
-    }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value === null || value.length < 6) {
+        callback(new Error('密码不能少于六位'))
       } else {
         callback()
       }
     }
     const validateSpace = (rule, value, callback) => {
-      if (value.trim() + '' === '') {
+      if (value === null || value.trim() + '' === '') {
         callback(new Error('内容不能全为空格'))
       } else {
         callback()
@@ -135,30 +126,33 @@ export default {
       redirect: undefined,
       otherQuery: {},
       dialogVisible: false,
-      name: '',
-      userName: '',
-      password: '',
-      phone: '',
-      userType: 'user',
-      introduction: '',
-      avatar: '',
-      IDCard: '',
-      school: '',
+      formData: {
+        userType: 'user',
+        name: null,
+        userName: null,
+        password1: null,
+        password2: null,
+        phone: null
+      },
       rules: {
         name: [
-          { required: true, message: '姓名', trigger: 'blur', validator: validateSpace },
-          { validator: validateUsername }
+          { required: true, message: '姓名不能为空', trigger: 'blur', validator: validateSpace },
+          { validator: validateSpace }
         ],
-        password: [
-          { required: true, message: '密码', trigger: 'blur' },
+        password1: [
+          { required: true, message: '密码不能少于六位', trigger: 'blur' },
+          { validator: validatePassword }
+        ],
+        password2: [
+          { required: true, message: '密码不能少于六位', trigger: 'blur' },
           { validator: validatePassword }
         ],
         userName: [
-          { required: true, message: '账号', trigger: 'blur', validator: validateSpace },
-          { validator: validateUsername }
+          { required: true, message: '账号不能为空', trigger: 'blur', validator: validateSpace },
+          { validator: validateSpace }
         ],
-        IDCard: [
-          { required: true, message: '身份证', trigger: 'blur' },
+        phone: [
+          { required: true, message: '手机号码不能为空', trigger: 'blur' },
           { validator: validateSpace }
         ]
       }
@@ -194,25 +188,56 @@ export default {
       this.dialogVisible = true
     },
     insert() {
-      const obj = {
-        pk_user: this.pk_user,
-        name: this.name,
-        userName: this.userName,
-        password: this.password,
-        phone: this.phone,
-        avatar: this.avatar,
-        introduction: this.introduction,
-        userType: this.userType,
-        IDCard: this.IDCard,
-        school: this.school
-      }
-      insertUser(obj).then(response => {
-        console.log(response)
-        this.$message({
-          message: '注册成功',
-          type: 'danger'
-        })
-        this.dialogVisible = false
+      checkName({ name: this.formData.userName }).then(response => {
+        if (!response.data) {
+          this.$message({
+            message: '该用户名已存在',
+            type: 'danger'
+          })
+        } else {
+          let can = true
+          for (const item in this.formData) {
+            if (this.formData[item] === null || this.formData[item] === '') {
+              this.$message({
+                message: '不能有信息为空',
+                type: 'danger'
+              })
+              can = false
+              break
+            }
+          }
+          if (can) {
+            if (this.formData.password1.length < 6) {
+              this.$message({
+                message: '密码长度不能小于6位',
+                type: 'danger'
+              })
+            } else {
+              if (this.formData.password1 === this.formData.password2) {
+                insertUser(this.formData).then(response => {
+                  this.$message({
+                    message: '注册成功',
+                    type: 'danger'
+                  })
+                  this.dialogVisible = false
+                  this.formData = {
+                    userType: 'user',
+                    name: null,
+                    userName: null,
+                    password1: null,
+                    password2: null,
+                    phone: null
+                  }
+                })
+              } else {
+                this.$message({
+                  message: '两次密码不一致',
+                  type: 'danger'
+                })
+              }
+            }
+          }
+        }
       })
     },
     checkCapslock({ shiftKey, key } = {}) {
@@ -280,8 +305,8 @@ export default {
 .elbody{
   margin-left:40%;
 }
-.el-dialog-longin .el-dialog{
-  background-image: url("../../assets/loginbg/ma.jpg");
+.el-dialog-login .el-dialog{
+  background-color: rgba(31, 45, 61, 0.56);
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
