@@ -55,14 +55,14 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <div class="grid-content bg-purple">
-            <el-form-item label="活动所属公司:" prop="company">
+            <el-form-item label="活动所属组织部门:" prop="company">
               <el-input v-model="actData.company" class="el-input-name" maxlength="50" :disabled="disabled" />
             </el-form-item>
           </div>
         </el-col>
       </el-row>
       <el-row>
-        <el-form-item label="地址:" prop="address">
+        <el-form-item label="工作地址:" prop="address">
           <el-input v-model="actData.address" class="el-input-name" maxlength="50" :disabled="disabled" />
         </el-form-item>
       </el-row>
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import { getChildren, getRef } from '../../../api/ref'
+import { getRef } from '../../../api/ref'
 
 export default {
   name: 'View1',
