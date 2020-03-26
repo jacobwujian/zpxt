@@ -181,9 +181,11 @@ export default {
           }
         }
       }
-      getResumes({ example: example }).then(response => {
-        this.resumes = response.data
-      })
+      if(this.nowAct.resultCount !== ''){
+        getResumes({ example: example }).then(response => {
+          this.resumes = response.data
+        })
+      }
     },
     getResumes(data) {
       if (this.nowAct.pk_act === undefined || this.nowAct.pk_act !== data.pk_act) {

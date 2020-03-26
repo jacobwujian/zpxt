@@ -10,7 +10,7 @@
         <el-col :span="18" :xs="24">
           <el-card>
             <el-tabs v-model="activeTab">
-              <el-tab-pane label="简历" name="account">
+              <el-tab-pane label="个人基本信息" name="account">
                 <account :user="user" />
               </el-tab-pane>
               <el-tab-pane label="工作经历" name="activity">
