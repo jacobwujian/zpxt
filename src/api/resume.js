@@ -41,10 +41,11 @@ export function updateSkills(data) {
     data
   })
 }
-export function getWorks() {
+export function getWorks(data) {
   return request({
     url: '/resume/getWorks',
-    method: 'get'
+    method: 'post',
+    data
   })
 }
 export function updateWork(data) {

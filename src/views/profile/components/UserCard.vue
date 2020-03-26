@@ -187,7 +187,7 @@ export default {
 
 <style lang="scss" scoped>
   .user-skills{
-    height: 300px;
+    height: 260px;
     overflow: auto;
   }
 

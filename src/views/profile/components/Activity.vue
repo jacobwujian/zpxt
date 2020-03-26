@@ -83,11 +83,11 @@ export default {
     }
   },
   mounted() {
-    this.getWorks()
+    this.getWorks({ pk_user: null })
   },
   methods: {
     getWorks() {
-      getWorks().then(response => {
+      getWorks({ pk_user: null }).then(response => {
         this.works = response.works
       })
     },

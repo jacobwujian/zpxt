@@ -47,7 +47,7 @@
     </span>
     <span>
       <label>邮箱:</label>
-      <el-input v-model.trim="resume.email" :disabled="edit" class="elforminput" size="mini" style="width: 200px" />
+      <el-input v-model.trim="resume.email" :disabled="edit" class="elforminput" size="mini" style="width: 220px" />
     </span>
     <span>
       <label>学历:</label>
@@ -74,7 +74,7 @@
         :options="options"
         :props="props"
         :show-all-levels="false"
-        style=" width: 180px;margin-right: 20px;"
+        style=" width: 200px;margin-right: 20px;"
       />
     </span>
     <span>
@@ -359,5 +359,6 @@ export default {
   .elforminput{
     width: 80px;
     margin-right: 20px;
+    font-size: 14px;
   }
 </style>

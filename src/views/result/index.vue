@@ -1,5 +1,8 @@
 <template>
   <el-card class="top-container">
+    <el-dialog title="详细信息" fullscreen destroy-on-close :visible.sync="dialogTableVisible">
+      <ViewResume :resume="chooseResume" :user="user"/>
+    </el-dialog>
     <div slot="header">
       <span>活动详情</span>
     </div>
@@ -110,8 +113,13 @@
 import { getAllActs } from '@/api/act'
 import { getResumes } from '@/api/resume'
 import { getRef } from '@/api/ref'
+import ViewResume from './components/index'
+import { getInfo } from '../../api/user'
+import { getWorks } from '@/api/resume'
+
 export default {
   name: 'Index',
+  components: { ViewResume },
   data() {
     return {
       searchName: null,
@@ -121,6 +129,7 @@ export default {
         children: 'children',
         label: 'act_name'
       },
+      dialogTableVisible: false,
       state: 2,
       states: [{ key: 2, name: '进行中' }, { key: 3, name: '已结束' }],
       job: null,
@@ -133,7 +142,9 @@ export default {
       },
       age: [{ name: '18岁~23岁', key: ' and age between 18 and 23' }, { name: '24岁~30岁', key: ' and age between 24 and 30' }, { name: '30岁~40岁', key: ' and age between 30 and 40' }, { name: '大于40岁', key: ' and age > 40' }],
       sex: [{ name: '男', key: 'man' }, { name: '女', key: 'woman' }],
-      resumes: []
+      resumes: [],
+      chooseResume: {},
+      user: {},
     }
   },
 
@@ -181,7 +192,36 @@ export default {
       }
     },
     view(row) {
-      console.log(row)
+      const eduData = []
+      eduData.push({ name: row.school1, type: row.schoolType1, startTime: row.start1, endTime: row.end1 })
+      eduData.push({ name: row.school2, type: row.schoolType2, startTime: row.start2, endTime: row.end2 })
+      eduData.push({ name: row.school3, type: row.schoolType3, startTime: row.start3, endTime: row.end3 })
+      this.chooseResume = row
+      if ((this.chooseResume.city !== '' || this.chooseResume.city !== undefined) && typeof (this.chooseResume.city) === 'string') {
+        this.chooseResume.city = this.chooseResume.city.substring(2, this.chooseResume.city.length - 2)
+        this.chooseResume.city = this.chooseResume.city.split('], [')
+        for (const item in this.chooseResume.city) {
+          this.chooseResume.city[item] = this.chooseResume.city[item].substring(this.chooseResume.city[item].indexOf(',') + 1)
+        }
+      }
+      if (typeof (this.chooseResume.skills) === 'string') {
+        this.chooseResume.skills = this.chooseResume.skills.split(',')
+      }
+      if (this.chooseResume.eduData === undefined) {
+        this.$set(this.chooseResume, 'eduData', eduData)
+      }
+      getInfo({ pk_user: row.pk_user }).then(response => {
+        this.user = response.data
+        if (this.chooseResume.works === undefined) {
+          getWorks({ pk_user: this.chooseResume.pk_user }).then(response => {
+            this.$set(this.chooseResume, 'works', response.works)
+            console.log(this.chooseResume)
+            this.dialogTableVisible = true
+          })
+        } else {
+          this.dialogTableVisible = true
+        }
+      })
     }
   }
 }
