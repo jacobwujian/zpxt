@@ -140,18 +140,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/icons/index'),
-        name: '图标',
-        meta: { title: '图标', icon: 'icon', noCache: true, roles: ['admin'] }
-      }
-    ]
-  },
-  {
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',

@@ -1,7 +1,7 @@
 <template>
   <el-card class="top-container">
     <el-dialog title="详细信息" fullscreen destroy-on-close :visible.sync="dialogTableVisible">
-      <ViewResume :resume="chooseResume" :user="user"/>
+      <ViewResume :resume="chooseResume" :user="user" />
     </el-dialog>
     <div slot="header">
       <span>活动详情</span>
@@ -85,7 +85,7 @@
           搜索
         </el-button>
         <br>
-        <el-table :data="resumes">
+        <el-table :data="resumes.slice((currentPage-1)*currentPageSize, currentPageSize*currentPage)">
           <el-table-column type="index" align="center" label="序号" width="60" />
           <el-table-column prop="name" align="center" label="姓名" show-overflow-tooltip />
           <el-table-column prop="sex" align="center" label="性别" show-overflow-tooltip>
@@ -103,6 +103,17 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          style="float: right"
+          node-key="id"
+          :current-page="currentPage"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="currentPageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="resumes.length"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </el-card>
     </div>
     <div />
@@ -145,6 +156,8 @@ export default {
       resumes: [],
       chooseResume: {},
       user: {},
+      currentPage: 1,
+      currentPageSize: 10
     }
   },
 
@@ -155,6 +168,12 @@ export default {
     this.refurbish()
   },
   methods: {
+    handleSizeChange(size) {
+      this.currentPageSize = size
+    },
+    handleCurrentChange(page) {
+      this.currentPage = page
+    },
     refurbish() {
       const obj = {
         name: this.searchName === '' ? null : this.searchName,
@@ -181,7 +200,7 @@ export default {
           }
         }
       }
-      if(this.nowAct.resultCount !== ''){
+      if (this.nowAct.resultCount !== '') {
         getResumes({ example: example }).then(response => {
           this.resumes = response.data
         })

@@ -89,7 +89,7 @@
             </el-table-column>
             <el-table-column align="center" label="操作">
               <template slot-scope="scope">
-                <el-button v-if="scope.row.edit" type="success" size="small" @click="sure(scope.row)">确定</el-button>
+                <el-button v-if="scope.row.edit" type="success" size="small" @click="sure(scope.row,scope.$index)">确定</el-button>
                 <el-button v-if="scope.row.edit" size="small" @click="cannel(scope.row)">取消</el-button>
                 <el-button v-if="!scope.row.edit" type="warning" size="small" @click="edit(scope.row)">修改</el-button>
                 <el-button v-if="!scope.row.edit" type="danger" size="small" @click="deleteRef(scope.row,scope.$index)">删除</el-button>
@@ -164,14 +164,19 @@ export default {
     },
     deleteRef(row, index) {
       deleteRef(row).then(response => {
-        this.refData.splice(index, 1)
+        this.refData.splice((this.currentPage - 1) * this.currentPageSize + index, 1)
+        if (this.refData.slice((this.currentPage - 1) * this.currentPageSize, this.currentPageSize * this.currentPage).length === 0) {
+          if (this.currentPage > 1) {
+            this.currentPage -= 1
+          }
+        }
         this.$notify({
           type: 'success',
           message: '删除成功!'
         })
       })
     },
-    sure(row) {
+    sure(row, index) {
       if (row.pk_ref !== undefined) {
         resetRefName(row).then(response => {
           row.edit = false
@@ -183,7 +188,7 @@ export default {
       } else {
         addRef(row).then(response => {
           row.edit = false
-          row = response.data
+          this.$set(row, 'pk_ref', response.data.pk_ref)
           this.$notify({
             type: 'success',
             message: '新增成功!'
@@ -203,7 +208,6 @@ export default {
     },
     handleCurrentChange(page) {
       this.currentPage = page
-      console.log(this.refData.slice((this.currentPage - 1) * this.currentPageSize, this.currentPageSize * this.currentPage))
     },
     append(node, data) {
       this.chooseNode = node
@@ -323,6 +327,9 @@ export default {
   }
   .eltree{
     height: 650px;
+  }
+  /deep/.el-scrollbar__wrap{
+    overflow-x: hidden;
   }
   .custom-tree-node {
     flex: 1;

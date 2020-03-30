@@ -7,9 +7,9 @@
       class="el-dialog-login"
       @close="$refs.formData.clearValidate()"
     >
-      <el-form ref="formData" :model="formData" :rules="rules">
+      <el-form ref="formData" :model="formData" :rules="rules" :label-position="right">
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="formData.name" style="width: 380px" @change="Check" />
+          <el-input v-model="formData.name" style="width: 380px" />
         </el-form-item>
         <el-form-item label="账号" prop="userName">
           <el-input v-model="formData.userName" style="width: 380px" />
@@ -111,6 +111,7 @@ export default {
       }
     }
     return {
+      right: 'top',
       loginForm: {
         username: '',
         password: ''
@@ -272,10 +273,13 @@ export default {
               this.loading = false
             })
             .catch(() => {
+              this.$message({
+                message: '登陆失败，账号不存在或账号密码不一致',
+                type: 'danger'
+              })
               this.loading = false
             })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -287,13 +291,6 @@ export default {
         }
         return acc
       }, {})
-    },
-    Check() {
-      checkName({ name: this.name }).then(
-        response => {
-          console.log(response.data)
-        }
-      )
     }
   }
 }

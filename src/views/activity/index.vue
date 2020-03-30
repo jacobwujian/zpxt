@@ -52,7 +52,7 @@
     </div>
     <div class="tableBody">
       <ActView :act-data="actData" :dialog-visible="dialogVisible" :disabled="false" @close="close()" @opea="opea" />
-      <el-table :data="actsData" :max-height="490" border highlight-current-row>
+      <el-table :data="actsData.slice((currentPage-1)*currentPageSize, currentPageSize*currentPage)" :max-height="490" border highlight-current-row>
         <el-table-column type="index" align="center" label="序号" width="60" />
         <el-table-column prop="act_name" align="center" label="招聘活动名" show-overflow-tooltip />
         <el-table-column prop="startTime" align="center" label="开始时间" width="150" show-overflow-tooltip>
@@ -87,6 +87,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        style="float: right"
+        node-key="id"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="currentPageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="actsData.length"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
     <div />
   </el-card>
@@ -159,7 +170,9 @@ export default {
       },
       active: 0,
       dateValue: [],
-      isSelectDate: false // 是否显示时间选择窗口
+      isSelectDate: false, // 是否显示时间选择窗口
+      currentPage: 1,
+      currentPageSize: 10
     }
   },
   computed: {
@@ -172,6 +185,12 @@ export default {
     this.refurbish()
   },
   methods: {
+    handleSizeChange(size) {
+      this.currentPageSize = size
+    },
+    handleCurrentChange(page) {
+      this.currentPage = page
+    },
     refurbish() {
       const obj = {
         name: this.searchName === '' ? null : this.searchName,

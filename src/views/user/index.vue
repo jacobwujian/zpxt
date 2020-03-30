@@ -1,8 +1,8 @@
 <template>
   <el-card class="top-container">
-    <title slot="header">
-      人员
-    </title>
+    <div slot="header">
+      账户管理
+    </div>
     <div class="titleRow">
       <el-input
         v-model="searchName"
@@ -17,7 +17,7 @@
         style="width: 180px"
         class="filter-item"
       >
-        <el-option v-for="item in rules" :key="item.key" :label="item.display_name" :value="item.key" />
+        <el-option v-for="item in options" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="search">
         搜索
@@ -32,40 +32,34 @@
         :visible.sync="dialogVisible"
         width="30%"
       >
-        <el-form>
-          <el-form-item label="姓名">
-            <el-input v-model="name" style="width: 380px" />
+        <el-form ref="formData" :model="formData" :rules="rules">
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="formData.name" style="width: 380px" />
           </el-form-item>
-          <el-form-item label="账号">
-            <el-input v-model="userName" style="width: 380px" />
+          <el-form-item label="账号" prop="userName">
+            <el-input v-model="formData.userName" style="width: 380px" />
           </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="password" style="width: 380px" />
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="formData.password" style="width: 380px" />
           </el-form-item>
           <el-form-item label="手机号">
-            <el-input v-model="phone" style="width: 380px" />
-          </el-form-item>
-          <el-form-item label="学校">
-            <el-input v-model="school" style="width: 380px" />
+            <el-input v-model="formData.phone" style="width: 380px" />
           </el-form-item>
           <el-form-item label="头像地址">
-            <el-input v-model="avatar" style="width: 380px" />
+            <el-input v-model="formData.avatar" style="width: 380px" />
           </el-form-item>
           <el-form-item label="身份证号">
-            <el-input v-model="IDCard" style="width: 380px" />
+            <el-input v-model="formData.IDCard" style="width: 380px" />
           </el-form-item>
           <el-form-item label="账号类型">
             <el-select
-              v-model="userType"
+              v-model="formData.userType"
               placeholder="账号类型"
               style="width: 380px"
               class="filter-item"
             >
-              <el-option v-for="item in rules" :key="item.key" :label="item.display_name" :value="item.key" />
+              <el-option v-for="item in options" :key="item.key" :label="item.display_name" :value="item.key" />
             </el-select>
-          </el-form-item>
-          <el-form-item label="自我介绍">
-            <el-input v-model="introduction" type="textarea" style="width: 380px" />
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -73,39 +67,63 @@
           <el-button type="primary" @click="updateOrInsert">确 定</el-button>
         </span>
       </el-dialog>
-      <el-table :data="userData" border highlight-current-row>
+      <el-table :data="userData.slice((currentPage-1)*currentPageSize, currentPageSize*currentPage)" border highlight-current-row>
         <el-table-column type="index" label="序号" width="80" />
         <el-table-column prop="name" label="姓名" width="150" show-overflow-tooltip />
         <el-table-column prop="userType" label="账号类型" width="150" show-overflow-tooltip />
-        <el-table-column prop="introduction" label="个人介绍" width="150" show-overflow-tooltip />
-        <el-table-column prop="avatar" label="头像地址" width="150" show-overflow-tooltip />
+        <el-table-column prop="avatar" label="头像地址" width="380" show-overflow-tooltip />
         <el-table-column prop="iDCard" label="身份证号" width="150" show-overflow-tooltip />
         <el-table-column prop="phone" label="手机" width="150" show-overflow-tooltip />
-        <el-table-column prop="school" label="学校" width="150" show-overflow-tooltip />
         <el-table-column prop="userName" label="账号" width="150" show-overflow-tooltip />
         <el-table-column prop="password" label="密码" width="150" show-overflow-tooltip />
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="edit(scope.row)">修改</el-button>
-            <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
+            <el-button type="text" size="small" @click="deleteUser(scope.row, scope.$index)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        style="float: right"
+        node-key="id"
+        :current-page="currentPage"
+        :page-sizes="[10, 20, 30, 40]"
+        :page-size="currentPageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="userData.length"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
     <div />
   </el-card>
 </template>
 
 <script>
-import { insertUser, updateUser, search, deleteUser } from '../../api/user'
-import { mapGetters } from 'vuex'
+import { insertUser, updateUser, search, deleteUser, checkName } from '../../api/user'
 
 export default {
   name: 'Index',
   data() {
+    const validatePassword = (rule, value, callback) => {
+      if (value === null || value.length < 6) {
+        callback(new Error('密码不能少于六位'))
+      } else {
+        callback()
+      }
+    }
+    const validateSpace = (rule, value, callback) => {
+      if (value === null || value.trim() + '' === '') {
+        callback(new Error('内容不能全为空格'))
+      } else {
+        callback()
+      }
+    }
     return {
+      currentPage: 1,
+      currentPageSize: 10,
       userData: [],
-      rules: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '招聘人' }, {
+      options: [{ key: 'admin', display_name: '管理员' }, { key: 'editor', display_name: '招聘人' }, {
         key: 'user',
         display_name: '求职者'
       }],
@@ -113,32 +131,33 @@ export default {
       chooseRule: 'editor',
       dialogVisible: false,
       pk_user: '',
-      name: '',
-      userName: '',
-      password: '',
-      phone: '',
-      userType: '',
-      introduction: '',
-      avatar: '',
-      IDCard: '',
-      school: '',
-      role: ''
+      formData: {
+        pk_user: '',
+        password: '',
+        userType: 'editor',
+        name: '',
+        userName: null,
+        avatar: null,
+        iDCard: null,
+        phone: null
+      },
+      rules: {
+        name: [
+          { required: true, message: '姓名不能为空', trigger: 'blur', validator: validateSpace },
+          { validator: validateSpace }
+        ],
+        password: [
+          { required: true, message: '密码不能少于六位', trigger: 'blur' },
+          { validator: validatePassword }
+        ],
+        userName: [
+          { required: true, message: '账号不能为空', trigger: 'blur', validator: validateSpace },
+          { validator: validateSpace }
+        ]
+      }
     }
-  },
-  computed: {
-    ...mapGetters([
-      'roles'
-    ])
   },
   mounted() {
-    this.role = this.roles[0]
-    if (this.role === 'editor') {
-      this.chooseRule = 'user'
-      this.rules = [{
-        key: 'user',
-        display_name: '用户'
-      }]
-    }
     const obj = {
       searchName: this.searchName,
       chooseRule: this.chooseRule
@@ -148,6 +167,12 @@ export default {
     })
   },
   methods: {
+    handleSizeChange(size) {
+      this.currentPageSize = size
+    },
+    handleCurrentChange(page) {
+      this.currentPage = page
+    },
     search() {
       const obj = {
         searchName: this.searchName,
@@ -158,66 +183,73 @@ export default {
       })
     },
     add() {
-      this.pk_user = ''
-      this.name = ''
-      this.userName = ''
-      this.password = ''
-      this.phone = ''
-      this.avatar = ''
-      this.introduction = ''
-      this.userType = 'editor'
-      this.IDCard = ''
-      this.school = ''
+      this.formData = {
+        pk_user: '',
+        password: '',
+        userType: 'editor',
+        name: '',
+        userName: null,
+        avatar: null,
+        iDCard: null,
+        phone: null
+      }
       this.dialogVisible = true
     },
     edit(row) {
-      this.pk_user = row.pk_user
-      this.name = row.name
-      this.userName = row.userName
-      this.password = row.password
-      this.phone = row.phone
-      this.avatar = row.avatar
-      this.introduction = row.introduction
-      this.userType = row.userType
-      this.IDCard = row.IDCard
-      this.school = row.school
+      this.formData = row
       this.dialogVisible = true
     },
-    deleteUser(row) {
-      deleteUser(row).then(response => {
-        this.$notify({
-          type: 'success',
-          message: '删除成功!'
+    deleteUser(row, index) {
+      this.$confirm('你確定要刪除账号' + row.userName + '嗎?', '刪除', {
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteUser(row).then(response => {
+          this.userData.splice((this.currentPage - 1) * this.currentPageSize + index, 1)
+          if (this.userData.slice((this.currentPage - 1) * this.currentPageSize, this.currentPageSize * this.currentPage).length === 0) {
+            if (this.currentPage > 1) {
+              this.currentPage -= 1
+            }
+          }
+          this.$notify({
+            type: 'success',
+            message: '删除成功!'
+          })
         })
-        this.search()
       })
     },
     updateOrInsert() {
-      const obj = {
-        pk_user: this.pk_user,
-        name: this.name,
-        userName: this.userName,
-        password: this.password,
-        phone: this.phone,
-        avatar: this.avatar,
-        introduction: this.introduction,
-        userType: this.userType,
-        IDCard: this.IDCard,
-        school: this.school
-      }
-      if (this.pk_user === '') {
-        insertUser(obj).then(response => {
-          const user = response.user
-          if (user.avatar === '') {
-            user.avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
-          }
-          this.userData.push(user)
-          this.dialogVisible = false
+      if (this.formData.password === '' || this.formData.userName === '' || this.formData.password === null || this.formData.userName === null || this.formData.password.length < 6) {
+        this.$notify({
+          type: 'success',
+          message: '账号密码不能为空成功!密码长度大于六'
         })
       } else {
-        updateUser(obj).then(response => {
-          this.dialogVisible = false
-        })
+        if (this.formData.pk_user === '') {
+          checkName({ name: this.formData.userName }).then(response => {
+            if (!response.data) {
+              this.$message({
+                message: '该用户名已存在',
+                type: 'danger'
+              })
+            } else {
+              insertUser(this.formData).then(response => {
+                const user = response.user
+                if (user.avatar === '') {
+                  user.avatar = 'https://cube.elemecdn.com/9/c2/f0ee8a3c7c9638a54940382568c9dpng.png'
+                }
+                this.userData.push(user)
+                this.dialogVisible = false
+              })
+            }
+          })
+        } else {
+          updateUser(this.formData).then(response => {
+            this.dialogVisible = false
+            this.search()
+          })
+        }
       }
     }
   }
