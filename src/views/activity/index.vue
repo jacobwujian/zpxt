@@ -82,7 +82,7 @@
             <el-button v-if="scope.row.state ===2" size="small" type="warning" @click="back(scope.row)">回退</el-button>
             <el-button v-if="scope.row.state === 1" type="success" size="small" @click="start(scope.row)">启动</el-button>
             <el-button v-if="scope.row.state === 2" type="info" size="small" @click="endAct(scope.row)">结束</el-button>
-            <el-button v-if="scope.row.state === 1" type="danger" size="small" @click="edit(scope.row)">修改</el-button>
+            <el-button v-if="scope.row.state === 1 ||scope.row.state === 0" type="danger" size="small" @click="edit(scope.row)">修改</el-button>
             <el-button v-if="scope.row.state !== 2" type="danger" size="small" @click="deleteAct(scope.row, scope.$index)">删除</el-button>
           </template>
         </el-table-column>
@@ -247,7 +247,12 @@ export default {
     },
     back(row) {
       row.state = 1
-      updateAct(row)
+      updateAct(row).then(response => {
+        this.$notify({
+          type: 'success',
+          message: '回退成功!'
+        })
+      })
     },
     start(row) {
       this.dateValue = [new Date(), new Date()]
@@ -265,8 +270,8 @@ export default {
         state: 0,
         address: '',
         salary: '',
-        startTime: '',
-        endTime: ''
+        startTime: null,
+        endTime: null
       }
       this.dialogVisible = true
     },
@@ -275,11 +280,17 @@ export default {
       this.dialogVisible = true
     },
     deleteAct(row, index) {
-      deleteAct(row).then(response => {
-        this.actsData.splice(index, 1)
-        this.$notify({
-          type: 'success',
-          message: '删除成功!'
+      this.$confirm('你確定要刪除活动' + row.act_name + '嗎?', '刪除', {
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteAct(row).then(response => {
+          this.actsData.splice(index, 1)
+          this.$notify({
+            type: 'success',
+            message: '删除成功!'
+          })
         })
       })
     }

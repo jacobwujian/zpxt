@@ -104,7 +104,7 @@ export default {
     updateOrInsert() {
       if (this.active === 3) {
         this.actData.state = 1
-      }
+      } else { this.actData.state = 0 }
       this.updateInsert(this.actData).then(response => {
         if (response['act'] !== undefined) {
           this.opea(response['act'])
