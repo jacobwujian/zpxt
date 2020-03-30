@@ -52,7 +52,7 @@
         :page-sizes="[10, 20, 30, 40]"
         :page-size="currentPageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="resumes.length"
+        :total="actsData.length"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
