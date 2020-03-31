@@ -1,7 +1,7 @@
 <template>
   <div class="user-activity">
     <el-dialog
-      title="增加技能"
+      title="工作经历"
       :visible.sync="addWorkShow"
       width="30%"
       @close="clear"
@@ -42,7 +42,7 @@
     </el-dialog>
 
     <div v-if="works.length !== 0">
-      <div v-for="item in works" class="post">
+      <div v-for="item in works" :key="item.pk_work" class="post">
         <div class="user-block">
           <span class="username text-muted">公司：{{ item.companyName }}&nbsp;&nbsp;&nbsp;&nbsp; <el-button type="text" @click="updateOpen(item)">修改</el-button><el-button type="text" @click="deleteWork(item)">删除</el-button></span>
           <span class="description">职位：{{ item.job }}</span>
@@ -137,17 +137,23 @@ export default {
       this.clear()
     },
     deleteWork(item) {
-      deleteWork(item).then(response => {
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        })
-        this.getWorks()
-        this.addWorkShow = false
-      }).catch(err => {
-        this.$message({
-          type: 'danger',
-          message: '删除失败!'
+      this.$confirm('你確定要刪除该条经历嗎?', '刪除', {
+        confirmButtonText: '確定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteWork(item).then(response => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          })
+          this.getWorks()
+          this.addWorkShow = false
+        }).catch(err => {
+          this.$message({
+            type: 'danger',
+            message: '删除失败!'
+          })
         })
       })
     },

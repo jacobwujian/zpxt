@@ -225,27 +225,33 @@ export default {
         })
       }
     })
-    getResume({ pk_user: this.user.pk_user }).then(response => {
-      this.resume = response.data
-      this.action = this.action + this.resume.pk_resume
-      this.eduData = []
-      this.eduData.push({ name: this.resume.school1, type: this.resume.schoolType1, startTime: this.resume.start1, endTime: this.resume.end1 })
-      this.eduData.push({ name: this.resume.school2, type: this.resume.schoolType2, startTime: this.resume.start2, endTime: this.resume.end2 })
-      this.eduData.push({ name: this.resume.school3, type: this.resume.schoolType3, startTime: this.resume.start3, endTime: this.resume.end3 })
-      const city = this.resume.city.substring(2, this.resume.city.length - 2)
-      this.resume.city = city.split('], [')
-      for (let i = 0; i < this.resume.city.length; i++) {
-        const sr = this.resume.city[i]
-        this.resume.city[i] = sr.split(', ')
-      }
-    })
+    this.reflush()
   },
   methods: {
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
+      this.$message({
+        type: 'success',
+        message: '上传成功!'
+      })
+      this.reflush()
+    },
+    reflush() {
+      getResume({ pk_user: this.user.pk_user }).then(response => {
+        this.resume = response.data
+        this.action = this.action + this.resume.pk_resume
+        this.eduData = []
+        this.eduData.push({ name: this.resume.school1, type: this.resume.schoolType1, startTime: this.resume.start1, endTime: this.resume.end1 })
+        this.eduData.push({ name: this.resume.school2, type: this.resume.schoolType2, startTime: this.resume.start2, endTime: this.resume.end2 })
+        this.eduData.push({ name: this.resume.school3, type: this.resume.schoolType3, startTime: this.resume.start3, endTime: this.resume.end3 })
+        const city = this.resume.city.substring(2, this.resume.city.length - 2)
+        this.resume.city = city.split('], [')
+        for (let i = 0; i < this.resume.city.length; i++) {
+          const sr = this.resume.city[i]
+          this.resume.city[i] = sr.split(', ')
+        }
+      })
     },
     beforeAvatarUpload(file) {
-      console.log(file)
       const isJPG = file.type === 'image/jpeg'
       const isPNG = file.type === 'image/png'
       const isLt2M = file.size / 1024 / 1024 < 2
