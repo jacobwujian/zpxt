@@ -190,6 +190,7 @@ export default {
       this.resumes = []
     },
     searchResume() {
+      this.currentPage = 1
       let example = 'select * from resume where pk_resume in (' + this.nowAct.resultCount + ')'
       for (const e in this.resumeSelect) {
         if (this.resumeSelect[e] !== null && this.resumeSelect[e] !== '') {

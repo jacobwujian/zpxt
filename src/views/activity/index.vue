@@ -234,6 +234,7 @@ export default {
       this.isSelectDate = false
     },
     search() {
+      this.currentPage = 1
       this.refurbish()
     },
     endAct(row) {

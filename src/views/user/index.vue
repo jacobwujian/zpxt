@@ -174,6 +174,7 @@ export default {
       this.currentPage = page
     },
     search() {
+      this.currentPage = 1
       const obj = {
         searchName: this.searchName,
         chooseRule: this.chooseRule

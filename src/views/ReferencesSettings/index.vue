@@ -5,7 +5,7 @@
     </div>
     <div class="tableBody">
       <div class="tree">
-        <el-dialog title="添加" :visible.sync="dialogFormVisible" width="20%">
+        <el-dialog title="参照分类" :visible.sync="dialogFormVisible" width="20%">
           <el-form ref="updateForm" :model="form" style="padding: 0 40px">
             <el-form-item label="參照名" label-width="80px" prop="oldPwd">
               <el-input v-model="form.appendName" minlength="1" maxlength="20" autocomplete="off" />
