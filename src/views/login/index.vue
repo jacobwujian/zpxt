@@ -9,19 +9,19 @@
     >
       <el-form ref="formData" :model="formData" :rules="rules" :label-position="right">
         <el-form-item label="姓名" prop="name">
-          <el-input v-model="formData.name" style="width: 380px" />
+          <el-input v-model="formData.name" style="margin-left:50px;width: 580px" />
         </el-form-item>
         <el-form-item label="账号" prop="userName">
-          <el-input v-model="formData.userName" style="width: 380px" />
+          <el-input v-model="formData.userName" style="margin-left:50px;width: 580px" />
         </el-form-item>
         <el-form-item label="密码" prop="password1">
-          <el-input v-model="formData.password1" type="password" style="width: 380px" />
+          <el-input v-model="formData.password1" type="password" style="margin-left:50px;width: 580px" />
         </el-form-item>
         <el-form-item label="重复密码" prop="password2">
-          <el-input v-model="formData.password2" type="password" style="width: 380px" />
+          <el-input v-model="formData.password2" type="password" style="margin-left:50px;width: 580px" />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
-          <el-input v-model="formData.phone" style="width: 380px" />
+          <el-input v-model="formData.phone" style="margin-left:50px;width: 580px" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -303,13 +303,17 @@ export default {
   margin-left:40%;
 }
 .el-dialog-login .el-dialog{
-  background-color: rgba(31, 45, 61, 0.56);
+  background-color: rgb(61, 60, 60);
   background-repeat: no-repeat;
   background-size: 100% 100%;
 }
-$bg: rgba(119, 84, 127, 0.44);
+
+.el-dialog__title{
+  color: #2ac06d;
+}
+$bg: rgba(119, 84, 127, 0.08);
 $light_gray:#fff;
-$cursor: #fff;
+$cursor: #787878;
 
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-in input {
@@ -326,16 +330,16 @@ $cursor: #fff;
 
     input {
       background: transparent;
-      border: 0px;
+      border: 0;
       -webkit-appearance: none;
-      border-radius: 0px;
+      border-radius: 0;
       padding: 12px 5px 12px 15px;
       color: $light_gray;
       height: 47px;
       caret-color: $cursor;
 
       &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
+        box-shadow: 0 0 0 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
       }
     }
@@ -345,18 +349,18 @@ $cursor: #fff;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    color: #454545;
+    color: rgba(69, 69, 69, 0.77);
   }
 }
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
-$light_gray:#eee;
+$bg: rgba(48, 75, 50, 0.03);
+$dark_gray: rgba(102, 12, 7, 0.97);
+$light_gray: #eeeeee;
 
 .login-container {
-  background-image: url("../../assets/loginbg/ma.jpg");
+  background-image: url("../../assets/loginbg/ma1.jpg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   min-height: 100%;
@@ -365,9 +369,9 @@ $light_gray:#eee;
   overflow: hidden;
 
   .login-form {
-    background-color: rgba(0, 0, 255, 0.11);
+    background-color: rgba(90, 142, 62, 0.49);
     position: relative;
-    right: 500px;
+    right: 0;
     top: 100px;
     width: 420px;
     max-width: 100%;
@@ -402,7 +406,7 @@ $light_gray:#eee;
     .title {
       font-size: 26px;
       color: $light_gray;
-      margin: 0px auto 40px auto;
+      margin: 0 auto 40px auto;
       text-align: center;
       font-weight: bold;
     }

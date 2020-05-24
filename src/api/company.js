@@ -7,21 +7,6 @@ export function getCompany(data) {
     data
   })
 }
-export function insertCompany(data) {
-  return request({
-    url: '/company/insertCompany',
-    method: 'post',
-    data
-  })
-}
-export function deleteCompany(data) {
-  return request({
-    url: '/company/deleteCompany',
-    method: 'post',
-    data
-  })
-}
-
 export function updateCompany(data) {
   return request({
     url: '/company/updateCompany',
