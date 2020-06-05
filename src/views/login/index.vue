@@ -2,6 +2,7 @@
   <div class="login-container">
     <el-dialog
       title="注册账号"
+      :destroy-on-close="true"
       :visible.sync="dialogVisible"
       :center="true"
       class="el-dialog-login"
@@ -99,6 +100,8 @@ export default {
     const validatePassword = (rule, value, callback) => {
       if (value === null || value.length < 6) {
         callback(new Error('密码不能少于六位'))
+      } else if (value.length > 16) {
+        callback(new Error('密码不能大于十六位'))
       } else {
         callback()
       }
@@ -141,11 +144,11 @@ export default {
           { validator: validateSpace }
         ],
         password1: [
-          { required: true, message: '密码不能少于六位', trigger: 'blur' },
+          { required: true, message: '密码不能少于六位或大于十六位', trigger: 'blur' },
           { validator: validatePassword }
         ],
         password2: [
-          { required: true, message: '密码不能少于六位', trigger: 'blur' },
+          { required: true, message: '密码不能少于六位或大于十六位', trigger: 'blur' },
           { validator: validatePassword }
         ],
         userName: [
@@ -186,6 +189,14 @@ export default {
   },
   methods: {
     register() {
+      this.formData = {
+        userType: 'user',
+        name: null,
+        userName: null,
+        password1: null,
+        password2: null,
+        phone: null
+      }
       this.dialogVisible = true
     },
     insert() {
@@ -273,10 +284,6 @@ export default {
               this.loading = false
             })
             .catch(() => {
-              this.$message({
-                message: '登陆失败，账号不存在或账号密码不一致',
-                type: 'danger'
-              })
               this.loading = false
             })
         } else {

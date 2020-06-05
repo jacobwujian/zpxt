@@ -73,3 +73,10 @@ export function deleteUser(data) {
     data
   })
 }
+export function updateUserPassword(data) {
+  return request({
+    url: '/user/updateUserPassword',
+    method: 'post',
+    data
+  })
+}

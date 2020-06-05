@@ -30,7 +30,9 @@
       <el-dialog
         title="账号信息"
         :visible.sync="dialogVisible"
+        :destroy-on-close="true"
         width="30%"
+        @close="close()"
       >
         <el-form ref="formData" :model="formData" :rules="rules">
           <el-form-item label="姓名" prop="name">
@@ -67,7 +69,7 @@
           <el-button type="primary" @click="updateOrInsert">确 定</el-button>
         </span>
       </el-dialog>
-      <el-table :data="userData.slice((currentPage-1)*currentPageSize, currentPageSize*currentPage)" border highlight-current-row>
+      <el-table :data="userData.slice((currentPage-1)*currentPageSize, currentPageSize*currentPage)" border highlight-current-row height="600">
         <el-table-column type="index" label="序号" width="80" />
         <el-table-column prop="name" label="姓名" width="150" show-overflow-tooltip />
         <el-table-column prop="userType" label="账号类型" width="150" show-overflow-tooltip />
@@ -108,6 +110,8 @@ export default {
     const validatePassword = (rule, value, callback) => {
       if (value === null || value.length < 6) {
         callback(new Error('密码不能少于六位'))
+      } else if (value.length > 16) {
+        callback(new Error('密码不能大于十六位'))
       } else {
         callback()
       }
@@ -147,7 +151,7 @@ export default {
           { validator: validateSpace }
         ],
         password: [
-          { required: true, message: '密码不能少于六位', trigger: 'blur' },
+          { required: true, message: '密码不能少于六位或大于16位', trigger: 'blur' },
           { validator: validatePassword }
         ],
         userName: [
@@ -183,7 +187,7 @@ export default {
         this.userData = response.data
       })
     },
-    add() {
+    close() {
       this.formData = {
         pk_user: '',
         password: '',
@@ -194,6 +198,8 @@ export default {
         iDCard: null,
         phone: null
       }
+    },
+    add() {
       this.dialogVisible = true
     },
     edit(row) {
@@ -221,7 +227,7 @@ export default {
       })
     },
     updateOrInsert() {
-      if (this.formData.password === '' || this.formData.userName === '' || this.formData.password === null || this.formData.userName === null || this.formData.password.length < 6) {
+      if (this.formData.password === '' || this.formData.userName === '' || this.formData.password === null || this.formData.userName === null || this.formData.password.length < 6 || this.formData.password.length>16) {
         this.$notify({
           type: 'success',
           message: '账号密码不能为空成功!密码长度大于六'

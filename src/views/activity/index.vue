@@ -256,7 +256,7 @@ export default {
       })
     },
     start(row) {
-      this.dateValue = [new Date(), new Date()]
+      this.dateValue = [new Date(), new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7)]
       this.isSelectDate = true
       this.actData = row
     },

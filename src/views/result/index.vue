@@ -237,7 +237,6 @@ export default {
         if (this.chooseResume.works === undefined) {
           getWorks({ pk_user: this.chooseResume.pk_user }).then(response => {
             this.$set(this.chooseResume, 'works', response.works)
-            console.log(this.chooseResume)
             this.dialogTableVisible = true
           })
         } else {
